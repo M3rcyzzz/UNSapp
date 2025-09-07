@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
-import Link from "next/link";
 import { ChevronRight, ChevronDown, Copy, Search, Info, HardDrive, Activity, CheckCircle2 } from "lucide-react";
 
 // ---------- Helper UI bits ----------
@@ -846,18 +845,9 @@ export default function UNSInteractiveBrowser() {
               placeholder="Search name/path/description..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-3 py-2 border rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+              className="pl-8 pr-3 py-2 border rounded-xl bg-white text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
               style={{ width: 320 }}
             />
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/eventflow"
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm border rounded-xl hover:bg-gray-50 text-indigo-600 hover:text-indigo-800"
-            >
-              <Activity className="w-4 h-4" />
-              EventFlow
-            </Link>
           </div>
           <div className="ml-auto flex items-center gap-2 text-xs text-gray-600">
             <TypeBadge type="metrics" />
@@ -874,13 +864,13 @@ export default function UNSInteractiveBrowser() {
               <SectionTitle>Export (full JSON)</SectionTitle>
               <div className="mt-2">
                 <textarea
-                  className="w-full h-64 font-mono text-xs border rounded-xl p-3 bg-gray-50"
+                  className="w-full h-64 font-mono text-xs border rounded-xl p-3 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
                   value={exportText}
                   onChange={(e) => setExportText(e.target.value)}
                 />
                 <div className="mt-2 flex items-center gap-2">
-                  <button onClick={() => copyToClipboard(exportText)} className="px-3 py-1.5 text-sm border rounded-xl hover:bg-gray-50 inline-flex items-center gap-1"><Copy className="w-4 h-4"/>Copy</button>
-                  <span className="text-xs text-gray-500">Format: {`{"version":"v1","topics":[{"path","type","template"}]}`}</span>
+                  <button onClick={() => copyToClipboard(exportText)} className="px-3 py-1.5 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center gap-1"><Copy className="w-4 h-4"/>Copy</button>
+                  <span className="text-xs text-gray-600 font-medium">Format: {`{"version":"v1","topics":[{"path","type","template"}]}`}</span>
                 </div>
               </div>
             </div>
@@ -888,13 +878,13 @@ export default function UNSInteractiveBrowser() {
               <SectionTitle>Import (paste JSON here)</SectionTitle>
               <div className="mt-2">
                 <textarea
-                  className="w-full h-64 font-mono text-xs border rounded-xl p-3"
+                  className="w-full h-64 font-mono text-xs border rounded-xl p-3 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
                   value={importText}
                   onChange={(e) => setImportText(e.target.value)}
                 />
                 <div className="mt-2 flex items-center gap-2">
-                  <button onClick={onImportFromPaste} className="px-3 py-1.5 text-sm border rounded-xl hover:bg-gray-50">Import from paste</button>
-                  <span className="text-xs text-gray-500">This will rebuild the tree from {`topics[].path`}</span>
+                  <button onClick={onImportFromPaste} className="px-3 py-1.5 text-sm border border-green-200 text-green-700 bg-green-50 rounded-xl hover:bg-green-100 hover:border-green-300 transition-colors">Import from paste</button>
+                  <span className="text-xs text-gray-600 font-medium">This will rebuild the tree from {`topics[].path`}</span>
                 </div>
               </div>
             </div>
@@ -911,8 +901,8 @@ export default function UNSInteractiveBrowser() {
               <SectionTitle>Namespace Tree</SectionTitle>
               <div className="flex items-center gap-2">
                 <Pill>{allNodes.length} nodes</Pill>
-                <button onClick={expandAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border rounded-xl hover:bg-gray-50"><ChevronDown className="w-4 h-4"/>Expand</button>
-                <button onClick={collapseAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border rounded-xl hover:bg-gray-50"><ChevronRight className="w-4 h-4"/>Collapse</button>
+                <button onClick={expandAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-blue-200 text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 hover:border-blue-300 transition-colors"><ChevronDown className="w-4 h-4"/>Expand</button>
+                <button onClick={collapseAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-orange-200 text-orange-700 bg-orange-50 rounded-xl hover:bg-orange-100 hover:border-orange-300 transition-colors"><ChevronRight className="w-4 h-4"/>Collapse</button>
               </div>
             </div>
             <div className="max-h-[70vh] overflow-auto p-2">
