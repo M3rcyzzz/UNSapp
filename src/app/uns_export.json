@@ -1,0 +1,950 @@
+{
+  "version": "v1",
+  "topics": [
+    {
+      "path": "v1/FY-Fab/erp/state/order-registry",
+      "type": "state",
+      "estMps": 0.03,
+      "description": "ERP publishes current open orders registry (upsert/delete by order).",
+      "template": {
+        "op": "upsert",
+        "order_id": "PO-202507-0001",
+        "product_id": "P-M6",
+        "qty": 5000,
+        "due_date": "2025-07-20",
+        "priority": 50,
+        "min_batch": 2000,
+        "source": "ERP"
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/plm/info/product-master-P-M5",
+      "type": "info",
+      "estMps": 0.005,
+      "description": "Product master: P-M5 screw (wire → CUTWIRE → COLD → THREAD → HT).",
+      "template": {
+        "op": "upsert",
+        "product_id": "P-M5",
+        "name": "M5 螺丝",
+        "material_type": "wire",
+        "route_v": 1,
+        "route_step_1": "CUTWIRE",
+        "route_step_2": "COLD",
+        "route_step_3": "THREAD",
+        "route_step_4": "HT",
+        "default_station_1": "CUT01",
+        "default_station_2": "CH01",
+        "default_station_3": "TR01",
+        "default_station_4": "HT01",
+        "mold_need_step_2": "MOLD_M5",
+        "mold_need_step_3": "ROLL_STD",
+        "min_batch": 2000,
+        "batch_time_min_step_1": 33.3,
+        "batch_time_min_step_2": 40.0,
+        "batch_time_min_step_3": 50.0,
+        "batch_time_min_step_4": 166.7
+      }
+    },
+    {
+      "path": "v1/FY-Fab/plm/info/product-master-P-M6",
+      "type": "info",
+      "estMps": 0.005,
+      "description": "Product master: P-M6 screw (wire → CUTWIRE → COLD → THREAD → HT).",
+      "template": {
+        "op": "upsert",
+        "product_id": "P-M6",
+        "name": "M6 螺丝",
+        "material_type": "wire",
+        "route_v": 1,
+        "route_step_1": "CUTWIRE",
+        "route_step_2": "COLD",
+        "route_step_3": "THREAD",
+        "route_step_4": "HT",
+        "default_station_1": "CUT01",
+        "default_station_2": "CH02",
+        "default_station_3": "TR02",
+        "default_station_4": "HT01",
+        "mold_need_step_2": "MOLD_M6",
+        "mold_need_step_3": "ROLL_STD",
+        "min_batch": 2000,
+        "batch_time_min_step_1": 33.3,
+        "batch_time_min_step_2": 40.0,
+        "batch_time_min_step_3": 50.0,
+        "batch_time_min_step_4": 166.7
+      }
+    },
+    {
+      "path": "v1/FY-Fab/plm/info/product-master-P-M8",
+      "type": "info",
+      "estMps": 0.005,
+      "description": "Product master: P-M8 bolt (wire → CUTWIRE → COLD → THREAD → HT).",
+      "template": {
+        "op": "upsert",
+        "product_id": "P-M8",
+        "name": "M8 螺栓",
+        "material_type": "wire",
+        "route_v": 1,
+        "route_step_1": "CUTWIRE",
+        "route_step_2": "COLD",
+        "route_step_3": "THREAD",
+        "route_step_4": "HT",
+        "default_station_1": "CUT01",
+        "default_station_2": "CH01",
+        "default_station_3": "TR01",
+        "default_station_4": "HT01",
+        "mold_need_step_2": "MOLD_M8",
+        "mold_need_step_3": "ROLL_STD",
+        "min_batch": 5000,
+        "batch_time_min_step_1": 83.3,
+        "batch_time_min_step_2": 100.0,
+        "batch_time_min_step_3": 125.0,
+        "batch_time_min_step_4": 416.7
+      }
+    },
+    {
+      "path": "v1/FY-Fab/plm/info/product-master-P-FL6",
+      "type": "info",
+      "estMps": 0.005,
+      "description": "Product master: M6 flange bolt (wire → CUTWIRE → COLD → THREAD → HT).",
+      "template": {
+        "op": "upsert",
+        "product_id": "P-FL6",
+        "name": "M6 法兰螺栓",
+        "material_type": "wire",
+        "route_v": 1,
+        "route_step_1": "CUTWIRE",
+        "route_step_2": "COLD",
+        "route_step_3": "THREAD",
+        "route_step_4": "HT",
+        "default_station_1": "CUT01",
+        "default_station_2": "CH02",
+        "default_station_3": "TR02",
+        "default_station_4": "HT01",
+        "mold_need_step_2": "MOLD_FLANGE_M6",
+        "mold_need_step_3": "ROLL_STD",
+        "min_batch": 5000,
+        "batch_time_min_step_1": 83.3,
+        "batch_time_min_step_2": 100.0,
+        "batch_time_min_step_3": 125.0,
+        "batch_time_min_step_4": 416.7
+      }
+    },
+    {
+      "path": "v1/FY-Fab/plm/info/product-master-P-PANEL1",
+      "type": "info",
+      "estMps": 0.005,
+      "description": "Product master: Sheet panel A (sheet → LASER → BEND → COAT → ASSY).",
+      "template": {
+        "op": "upsert",
+        "product_id": "P-PANEL1",
+        "name": "钣金面板 A",
+        "material_type": "sheet",
+        "route_v": 1,
+        "route_step_1": "LASER",
+        "route_step_2": "BEND",
+        "route_step_3": "COAT",
+        "route_step_4": "ASSY",
+        "default_station_1": "LASER01",
+        "default_station_2": "BEND01",
+        "default_station_3": "COAT01",
+        "default_station_4": "ASSY01",
+        "min_batch": 5,
+        "batch_time_min_step_1": 10.0,
+        "batch_time_min_step_2": 7.5,
+        "batch_time_min_step_3": 15.0,
+        "batch_time_min_step_4": 10.0
+      }
+    },
+    {
+      "path": "v1/FY-Fab/plm/info/product-master-P-PANEL2",
+      "type": "info",
+      "estMps": 0.005,
+      "description": "Product master: Sheet panel B (sheet → LASER → BEND → COAT → ASSY).",
+      "template": {
+        "op": "upsert",
+        "product_id": "P-PANEL2",
+        "name": "钣金面板 B",
+        "material_type": "sheet",
+        "route_v": 1,
+        "route_step_1": "LASER",
+        "route_step_2": "BEND",
+        "route_step_3": "COAT",
+        "route_step_4": "ASSY",
+        "default_station_1": "LASER01",
+        "default_station_2": "BEND01",
+        "default_station_3": "COAT01",
+        "default_station_4": "ASSY02",
+        "min_batch": 10,
+        "batch_time_min_step_1": 22.0,
+        "batch_time_min_step_2": 16.0,
+        "batch_time_min_step_3": 32.0,
+        "batch_time_min_step_4": 22.0
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/tooling/info/mold-MOLD_M5",
+      "type": "info",
+      "estMps": 0.002,
+      "description": "Cold header mold for M5 screws.",
+      "template": {
+        "op": "upsert",
+        "mold_id": "MOLD_M5",
+        "type": "cold_header",
+        "qty": 1,
+        "compatible_products": "P-M5"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/tooling/info/mold-MOLD_M6",
+      "type": "info",
+      "estMps": 0.002,
+      "description": "Cold header mold for M6 screws.",
+      "template": {
+        "op": "upsert",
+        "mold_id": "MOLD_M6",
+        "type": "cold_header",
+        "qty": 1,
+        "compatible_products": "P-M6"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/tooling/info/mold-MOLD_M8",
+      "type": "info",
+      "estMps": 0.002,
+      "description": "Cold header mold for M8 bolts.",
+      "template": {
+        "op": "upsert",
+        "mold_id": "MOLD_M8",
+        "type": "cold_header",
+        "qty": 1,
+        "compatible_products": "P-M8"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/tooling/info/mold-MOLD_FLANGE_M6",
+      "type": "info",
+      "estMps": 0.002,
+      "description": "Cold header mold for M6 flange bolts.",
+      "template": {
+        "op": "upsert",
+        "mold_id": "MOLD_FLANGE_M6",
+        "type": "cold_header",
+        "qty": 1,
+        "compatible_products": "P-FL6"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/tooling/info/mold-MOLD_STUD",
+      "type": "info",
+      "estMps": 0.002,
+      "description": "Cold header mold for studs.",
+      "template": {
+        "op": "upsert",
+        "mold_id": "MOLD_STUD",
+        "type": "cold_header",
+        "qty": 1,
+        "compatible_products": ""
+      }
+    },
+    {
+      "path": "v1/FY-Fab/tooling/info/mold-ROLL_STD",
+      "type": "info",
+      "estMps": 0.002,
+      "description": "Thread rolling dies for standard thread.",
+      "template": {
+        "op": "upsert",
+        "mold_id": "ROLL_STD",
+        "type": "thread_roller",
+        "qty": 2,
+        "compatible_products": "P-M5;P-M6;P-M8;P-FL6"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/tooling/info/mold-ROLL_SELF_TAP",
+      "type": "info",
+      "estMps": 0.002,
+      "description": "Thread rolling dies for self-tapping thread.",
+      "template": {
+        "op": "upsert",
+        "mold_id": "ROLL_SELF_TAP",
+        "type": "thread_roller",
+        "qty": 1,
+        "compatible_products": ""
+      }
+    },
+    {
+      "path": "v1/FY-Fab/tooling/info/changeover-matrix-cold-header",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Setup time matrix (minutes) for cold headers CH01/CH02 by product switch.",
+      "template": {
+        "function": "cold_header",
+        "stations": "CH01;CH02",
+        "matrix": {
+          "P-M5": { "P-M5": 0, "P-M6": 15, "P-M8": 20, "P-FL6": 25 },
+          "P-M6": { "P-M5": 15, "P-M6": 0, "P-M8": 20, "P-FL6": 25 },
+          "P-M8": { "P-M5": 20, "P-M6": 20, "P-M8": 0, "P-FL6": 30 },
+          "P-FL6": { "P-M5": 25, "P-M6": 25, "P-M8": 30, "P-FL6": 0 }
+        }
+      }
+    },
+    {
+      "path": "v1/FY-Fab/tooling/info/changeover-matrix-thread-roller",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Setup time matrix (minutes) for thread rollers TR01/TR02 by product switch.",
+      "template": {
+        "function": "thread_roller",
+        "stations": "TR01;TR02",
+        "matrix": {
+          "P-M5": { "P-M5": 0, "P-M6": 0, "P-M8": 0, "P-FL6": 20 },
+          "P-M6": { "P-M5": 0, "P-M6": 0, "P-M8": 0, "P-FL6": 20 },
+          "P-M8": { "P-M5": 0, "P-M6": 0, "P-M8": 0, "P-FL6": 20 },
+          "P-FL6": { "P-M5": 15, "P-M6": 15, "P-M8": 15, "P-FL6": 0 }
+        }
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/warehouse/state/inventory-S1",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "Inventory snapshot for material S1.",
+      "template": {
+        "material_id": "S1",
+        "name": "冷轧钢板",
+        "type": "sheet",
+        "spec": "1.0mm",
+        "onhand_kg": 3000,
+        "allocated_kg": 0
+      }
+    },
+    {
+      "path": "v1/FY-Fab/warehouse/state/inventory-S2",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "Inventory snapshot for material S2.",
+      "template": {
+        "material_id": "S2",
+        "name": "镀锌钢板",
+        "type": "sheet",
+        "spec": "1.0mm",
+        "onhand_kg": 2000,
+        "allocated_kg": 0
+      }
+    },
+    {
+      "path": "v1/FY-Fab/warehouse/state/inventory-S3",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "Inventory snapshot for material S3.",
+      "template": {
+        "material_id": "S3",
+        "name": "不锈钢板",
+        "type": "sheet",
+        "spec": "1.2mm",
+        "onhand_kg": 1500,
+        "allocated_kg": 0
+      }
+    },
+    {
+      "path": "v1/FY-Fab/warehouse/state/inventory-S4",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "Inventory snapshot for material S4.",
+      "template": {
+        "material_id": "S4",
+        "name": "铝板",
+        "type": "sheet",
+        "spec": "2.0mm",
+        "onhand_kg": 1000,
+        "allocated_kg": 0
+      }
+    },
+    {
+      "path": "v1/FY-Fab/warehouse/state/inventory-S5",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "Inventory snapshot for material S5.",
+      "template": {
+        "material_id": "S5",
+        "name": "彩涂钢板",
+        "type": "sheet",
+        "spec": "0.8mm",
+        "onhand_kg": 1200,
+        "allocated_kg": 0
+      }
+    },
+    {
+      "path": "v1/FY-Fab/warehouse/state/inventory-W1",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "Inventory snapshot for material W1.",
+      "template": {
+        "material_id": "W1",
+        "name": "中碳钢丝",
+        "type": "wire",
+        "spec": "φ5.0mm",
+        "onhand_kg": 5000,
+        "allocated_kg": 0
+      }
+    },
+    {
+      "path": "v1/FY-Fab/warehouse/state/inventory-W2",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "Inventory snapshot for material W2.",
+      "template": {
+        "material_id": "W2",
+        "name": "低碳钢丝",
+        "type": "wire",
+        "spec": "φ3.0mm",
+        "onhand_kg": 4000,
+        "allocated_kg": 0
+      }
+    },
+    {
+      "path": "v1/FY-Fab/warehouse/state/inventory-W3",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "Inventory snapshot for material W3.",
+      "template": {
+        "material_id": "W3",
+        "name": "不锈钢丝",
+        "type": "wire",
+        "spec": "φ4.0mm",
+        "onhand_kg": 3000,
+        "allocated_kg": 0
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/workforce/info/workgroup-OP_LASER",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Operator group for LASER.",
+      "template": {
+        "group_id": "OP_LASER",
+        "stage": "LASER",
+        "per_shift_headcount": 1,
+        "shifts": 2
+      }
+    },
+    {
+      "path": "v1/FY-Fab/workforce/info/workgroup-OP_BEND",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Operator group for BEND.",
+      "template": {
+        "group_id": "OP_BEND",
+        "stage": "BEND",
+        "per_shift_headcount": 1,
+        "shifts": 2
+      }
+    },
+    {
+      "path": "v1/FY-Fab/workforce/info/workgroup-OP_COAT",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Operator group for COAT.",
+      "template": {
+        "group_id": "OP_COAT",
+        "stage": "COAT",
+        "per_shift_headcount": 1,
+        "shifts": 2
+      }
+    },
+    {
+      "path": "v1/FY-Fab/workforce/info/workgroup-OP_ASSY",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Operator group for ASSY.",
+      "template": {
+        "group_id": "OP_ASSY",
+        "stage": "ASSY",
+        "per_shift_headcount": 2,
+        "shifts": 2
+      }
+    },
+    {
+      "path": "v1/FY-Fab/workforce/info/workgroup-OP_CUT",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Operator group for CUTWIRE.",
+      "template": {
+        "group_id": "OP_CUT",
+        "stage": "CUTWIRE",
+        "per_shift_headcount": 1,
+        "shifts": 2
+      }
+    },
+    {
+      "path": "v1/FY-Fab/workforce/info/workgroup-OP_COLD",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Operator group for COLD.",
+      "template": {
+        "group_id": "OP_COLD",
+        "stage": "COLD",
+        "per_shift_headcount": 2,
+        "shifts": 2
+      }
+    },
+    {
+      "path": "v1/FY-Fab/workforce/info/workgroup-OP_THREAD",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Operator group for THREAD.",
+      "template": {
+        "group_id": "OP_THREAD",
+        "stage": "THREAD",
+        "per_shift_headcount": 1,
+        "shifts": 2
+      }
+    },
+    {
+      "path": "v1/FY-Fab/workforce/info/workgroup-OP_HEAT",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Operator group for HT.",
+      "template": {
+        "group_id": "OP_HEAT",
+        "stage": "HT",
+        "per_shift_headcount": 1,
+        "shifts": 2
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/sched/info/plan-draft",
+      "type": "info",
+      "estMps": 0.2,
+      "description": "Draft production plan proposals before dispatch (does not start execution).",
+      "template": {
+        "plan_id": "PLAN-2025-09-05-01",
+        "gen_ts": "2025-09-05T06:10:00Z",
+        "order_id": "PO-202507-0001",
+        "product_id": "P-M6",
+        "step_code": "THREAD",
+        "target_station": "TR02",
+        "job_id": "JOB-000123",
+        "batch_qty": 2000,
+        "est_start_ts": "2025-09-05T08:00:00Z",
+        "est_end_ts": "2025-09-05T11:00:00Z",
+        "need_mold": "ROLL_STD",
+        "need_changeover": "Y"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/sched/action/push-to-queue",
+      "type": "action",
+      "estMps": 0.05,
+      "description": "Action to send selected plan jobs into device queues (append/priority).",
+      "template": {
+        "plan_id": "PLAN-2025-09-05-01",
+        "job_id": "JOB-000123",
+        "target_function": "thread_roller",
+        "target_station": "TR02",
+        "dispatch_mode": "append"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/sched/state/queue-snapshot",
+      "type": "state",
+      "estMps": 0.1,
+      "description": "Aggregated view of station queues: counts of queued/running jobs.",
+      "template": {
+        "snapshot_ts": "2025-09-05T07:59:30Z",
+        "station_count": 11,
+        "queued_jobs": 18,
+        "running_jobs": 5
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/sheet/LASER01/state/current-job",
+      "type": "state",
+      "estMps": 1.0,
+      "description": "LASER01 current job state.",
+      "template": { "job_id": "JOB-LZ-001", "status": "queued", "batch_qty": 5 }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/LASER01/action/dispatch-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Dispatch job to LASER01.",
+      "template": {
+        "job_id": "JOB-LZ-001",
+        "order_id": "PO-202507-1001",
+        "product_id": "P-PANEL1",
+        "step_code": "LASER",
+        "batch_qty": 5
+      }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/LASER01/action/start-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Start job on LASER01.",
+      "template": {
+        "job_id": "JOB-LZ-001",
+        "operator_group": "OP_LASER",
+        "expect_minutes": 10
+      }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/LASER01/action/complete-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Complete job on LASER01.",
+      "template": {
+        "job_id": "JOB-LZ-001",
+        "operator_group": "OP_LASER",
+        "good_qty": 5,
+        "end_reason": "normal"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/LASER01/metrics/cycle-ms",
+      "type": "metrics",
+      "estMps": 2.5,
+      "description": "Cycle time metrics from LASER01.",
+      "template": { "cycle_ms": 4500 }
+    },
+
+    {
+      "path": "v1/FY-Fab/sheet/BEND01/state/current-job",
+      "type": "state",
+      "estMps": 0.8,
+      "description": "BEND01 current job state.",
+      "template": { "job_id": "JOB-BD-001", "status": "queued", "batch_qty": 5 }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/BEND01/action/dispatch-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Dispatch job to BEND01.",
+      "template": {
+        "job_id": "JOB-BD-001",
+        "order_id": "PO-202507-1001",
+        "product_id": "P-PANEL1",
+        "step_code": "BEND",
+        "batch_qty": 5
+      }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/BEND01/action/start-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Start job on BEND01.",
+      "template": {
+        "job_id": "JOB-BD-001",
+        "operator_group": "OP_BEND",
+        "expect_minutes": 7.5
+      }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/BEND01/action/complete-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Complete job on BEND01.",
+      "template": {
+        "job_id": "JOB-BD-001",
+        "operator_group": "OP_BEND",
+        "good_qty": 5,
+        "end_reason": "normal"
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/sheet/COAT01/info/clean-rule",
+      "type": "info",
+      "estMps": 0.001,
+      "description": "Powder coating cleaning rule.",
+      "template": { "min_clean_time_min": 10, "trigger_on_color_change": "Y" }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/COAT01/state/clean-status",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "COAT01 cleaning status.",
+      "template": { "status": "idle", "start_ts": "" }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/COAT01/action/clean-start",
+      "type": "action",
+      "estMps": 0.01,
+      "description": "Start cleaning on COAT01.",
+      "template": { "by": "system", "reason": "color_change" }
+    },
+
+    {
+      "path": "v1/FY-Fab/sheet/ASSY01/state/current-job",
+      "type": "state",
+      "estMps": 0.5,
+      "description": "ASSY01 current job state.",
+      "template": { "job_id": "JOB-AS-001", "status": "queued", "batch_qty": 5 }
+    },
+    {
+      "path": "v1/FY-Fab/sheet/ASSY02/state/current-job",
+      "type": "state",
+      "estMps": 0.5,
+      "description": "ASSY02 current job state.",
+      "template": {
+        "job_id": "JOB-AS-002",
+        "status": "queued",
+        "batch_qty": 10
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/cold/CUT01/state/current-job",
+      "type": "state",
+      "estMps": 0.7,
+      "description": "CUT01 current job state.",
+      "template": {
+        "job_id": "JOB-CUT-001",
+        "status": "queued",
+        "batch_qty": 2000
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/CUT01/action/dispatch-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Dispatch job to CUT01.",
+      "template": {
+        "job_id": "JOB-CUT-001",
+        "order_id": "PO-202507-0001",
+        "product_id": "P-M6",
+        "step_code": "CUTWIRE",
+        "batch_qty": 2000
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/CUT01/action/start-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Start job on CUT01.",
+      "template": {
+        "job_id": "JOB-CUT-001",
+        "operator_group": "OP_CUT",
+        "expect_minutes": 33.3
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/CUT01/action/complete-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Complete job on CUT01.",
+      "template": {
+        "job_id": "JOB-CUT-001",
+        "operator_group": "OP_CUT",
+        "good_qty": 2000,
+        "end_reason": "normal"
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/cold/CH01/state/current-mold",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "CH01 current mold and life.",
+      "template": {
+        "mold_id": "MOLD_M6",
+        "since_ts": "2025-09-05T07:40:00Z",
+        "life_used_cycles": 3200
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/CH01/action/change-mold",
+      "type": "action",
+      "estMps": 0.01,
+      "description": "Change mold on CH01.",
+      "template": {
+        "to_mold": "MOLD_M5",
+        "reason": "product_switch",
+        "est_setup_min": 15
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/CH01/action/dispatch-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Dispatch job to CH01.",
+      "template": {
+        "job_id": "JOB-CH1-001",
+        "order_id": "PO-202507-0001",
+        "product_id": "P-M6",
+        "step_code": "COLD",
+        "batch_qty": 2000,
+        "need_mold": "MOLD_M6"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/CH01/metrics/good-count",
+      "type": "metrics",
+      "estMps": 2.0,
+      "description": "Good part counter for CH01.",
+      "template": { "count": 120 }
+    },
+
+    {
+      "path": "v1/FY-Fab/cold/CH02/state/current-mold",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "CH02 current mold and life.",
+      "template": {
+        "mold_id": "MOLD_M8",
+        "since_ts": "2025-09-05T08:00:00Z",
+        "life_used_cycles": 500
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/CH02/action/change-mold",
+      "type": "action",
+      "estMps": 0.01,
+      "description": "Change mold on CH02.",
+      "template": {
+        "to_mold": "MOLD_FLANGE_M6",
+        "reason": "product_switch",
+        "est_setup_min": 25
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/CH02/action/dispatch-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Dispatch job to CH02.",
+      "template": {
+        "job_id": "JOB-CH2-001",
+        "order_id": "PO-202507-0002",
+        "product_id": "P-FL6",
+        "step_code": "COLD",
+        "batch_qty": 5000,
+        "need_mold": "MOLD_FLANGE_M6"
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/cold/TR01/state/current-mold",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "TR01 current rolling die and life.",
+      "template": {
+        "mold_id": "ROLL_STD",
+        "since_ts": "2025-09-05T07:50:00Z",
+        "life_used_cycles": 820
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/TR01/action/dispatch-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Dispatch job to TR01.",
+      "template": {
+        "job_id": "JOB-TR1-001",
+        "order_id": "PO-202507-0001",
+        "product_id": "P-M6",
+        "step_code": "THREAD",
+        "batch_qty": 2000,
+        "need_mold": "ROLL_STD"
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/TR01/state/current-job",
+      "type": "state",
+      "estMps": 1.0,
+      "description": "TR01 current job state.",
+      "template": {
+        "job_id": "JOB-TR1-001",
+        "status": "queued",
+        "queued_ts": "2025-09-05T08:00:00Z",
+        "start_ts": "",
+        "end_ts": "",
+        "batch_qty": 2000
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/TR01/action/start-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Start job on TR01.",
+      "template": {
+        "job_id": "JOB-TR1-001",
+        "operator_group": "OP_THREAD",
+        "expect_minutes": 50.0
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/TR01/action/complete-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Complete job on TR01.",
+      "template": {
+        "job_id": "JOB-TR1-001",
+        "operator_group": "OP_THREAD",
+        "good_qty": 2000,
+        "end_reason": "normal"
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/cold/TR02/state/current-mold",
+      "type": "state",
+      "estMps": 0.02,
+      "description": "TR02 current rolling die and life.",
+      "template": {
+        "mold_id": "ROLL_STD",
+        "since_ts": "2025-09-05T07:55:00Z",
+        "life_used_cycles": 120
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/TR02/action/dispatch-task",
+      "type": "action",
+      "estMps": 0.2,
+      "description": "Dispatch job to TR02.",
+      "template": {
+        "job_id": "JOB-TR2-001",
+        "order_id": "PO-202507-0002",
+        "product_id": "P-FL6",
+        "step_code": "THREAD",
+        "batch_qty": 5000,
+        "need_mold": "ROLL_STD"
+      }
+    },
+
+    {
+      "path": "v1/FY-Fab/cold/HT01/state/batch-status",
+      "type": "state",
+      "estMps": 0.05,
+      "description": "HT01 batch status.",
+      "template": { "job_id": "JOB-HT-001", "status": "idle" }
+    },
+    {
+      "path": "v1/FY-Fab/cold/HT01/action/start-task",
+      "type": "action",
+      "estMps": 0.1,
+      "description": "Start batch on HT01.",
+      "template": {
+        "job_id": "JOB-HT-001",
+        "operator_group": "OP_HEAT",
+        "expect_minutes": 166.7
+      }
+    },
+    {
+      "path": "v1/FY-Fab/cold/HT01/action/complete-task",
+      "type": "action",
+      "estMps": 0.1,
+      "description": "Complete batch on HT01.",
+      "template": {
+        "job_id": "JOB-HT-001",
+        "operator_group": "OP_HEAT",
+        "good_qty": 2000
+      }
+    }
+  ]
+}
