@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
+import Link from "next/link";
 import { ChevronRight, ChevronDown, Copy, Search, Info, HardDrive, Activity, CheckCircle2 } from "lucide-react";
 
 // ---------- Helper UI bits ----------
@@ -848,6 +849,15 @@ export default function UNSInteractiveBrowser() {
               className="pl-8 pr-3 py-2 border rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
               style={{ width: 320 }}
             />
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/eventflow"
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm border rounded-xl hover:bg-gray-50 text-indigo-600 hover:text-indigo-800"
+            >
+              <Activity className="w-4 h-4" />
+              EventFlow
+            </Link>
           </div>
           <div className="ml-auto flex items-center gap-2 text-xs text-gray-600">
             <TypeBadge type="metrics" />
