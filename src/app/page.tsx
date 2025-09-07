@@ -738,7 +738,7 @@ const Details = ({ node }: { node?: Node }) => {
         <Card>
           <div className="p-4 space-y-2">
             <SectionTitle>Payload Template (JSON)</SectionTitle>
-            <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs overflow-auto">{JSON.stringify(node.template, null, 2)}</pre>
+            <pre className="bg-gray-900 border border-gray-700 rounded-xl p-4 text-sm text-green-400 font-mono overflow-auto leading-relaxed shadow-inner">{JSON.stringify(node.template, null, 2)}</pre>
           </div>
         </Card>
       )}
@@ -864,7 +864,7 @@ export default function UNSInteractiveBrowser() {
               <SectionTitle>Export (full JSON)</SectionTitle>
               <div className="mt-2">
                 <textarea
-                  className="w-full h-64 font-mono text-xs border rounded-xl p-3 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
+                  className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-white transition-colors"
                   value={exportText}
                   onChange={(e) => setExportText(e.target.value)}
                 />
@@ -878,7 +878,7 @@ export default function UNSInteractiveBrowser() {
               <SectionTitle>Import (paste JSON here)</SectionTitle>
               <div className="mt-2">
                 <textarea
-                  className="w-full h-64 font-mono text-xs border rounded-xl p-3 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
+                  className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-gray-50 transition-colors"
                   value={importText}
                   onChange={(e) => setImportText(e.target.value)}
                 />
