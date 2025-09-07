@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useMemo, useState, useEffect } from "react";
 import { ChevronRight, ChevronDown, Copy, Search, Info, HardDrive, Activity, CheckCircle2 } from "lucide-react";
 
@@ -37,7 +39,7 @@ export type Node = {
   path: string; // full UNS path
   type?: TopicType; // only on leaf topics
   estMps?: number; // estimated messages per second
-  template?: Record<string, any>; // shallow JSON example payload
+  template?: Record<string, unknown>; // shallow JSON example payload
   description?: string; // human description
   children?: Node[];
 };
@@ -564,7 +566,7 @@ const hasDescendantMatch = (node: Node, q: string): boolean => {
 // Export format kept *minimal*: only leaf topics
 // {"version":"v1","topics":[{"path":"...","type":"state","template":{...}}]}
 
-type CompactTopic = { path: string; type?: TopicType; template?: Record<string, any>; estMps?: number; description?: string };
+type CompactTopic = { path: string; type?: TopicType; template?: Record<string, unknown>; estMps?: number; description?: string };
 
 type CompactDoc = { version: string; topics: CompactTopic[] };
 
@@ -822,7 +824,7 @@ export default function UNSInteractiveBrowser() {
       const rebuilt = fromCompact(json);
       setData(rebuilt);
       setSelected(undefined);
-    } catch (e) {
+    } catch {
       alert("Invalid JSON. Expected {version, topics[]} with leaf items.");
     }
   };
