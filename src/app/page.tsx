@@ -400,7 +400,7 @@ export default function UNSInteractiveBrowser() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>(createExpandedState(initialDATA));
   const [selected, setSelected] = useState<Node>();
   const [search, setSearch] = useState("");
-  const [showTopicTypes, setShowTopicTypes] = useState(false);
+  const [showTopicTypes, setShowTopicTypes] = useState(true);
   const [showExportImport, setShowExportImport] = useState(false);
   const [mqttStats, setMqttStats] = useState<MqttStats | null>(null);
 
@@ -524,124 +524,6 @@ export default function UNSInteractiveBrowser() {
 
         <SelfTestPanel root={data} />
         
-        {/* Topic Types Description - Collapsible */}
-        <Card className="overflow-hidden">
-          <div 
-            className="p-4 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-200"
-            onClick={() => setShowTopicTypes(!showTopicTypes)}
-          >
-            <div className="flex items-center justify-between">
-              <SectionTitle>UNS Topic Types</SectionTitle>
-              {showTopicTypes ? (
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-gray-500" />
-              )}
-            </div>
-          </div>
-          {showTopicTypes && (
-            <div className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-xl border border-green-200">
-                  <TypeBadge type="state" />
-                  <div className="flex-1">
-                    <h4 className="text-sm font-semibold text-green-800 mb-1">State</h4>
-                    <p className="text-xs text-green-700 leading-relaxed">
-                      System current state, published by authenticated external systems/eventflow, subscribed by BIS App UI/eventflow
-                    </p>
-                    <p className="text-xs text-green-600 mt-1 font-mono">
-                      e.g.: device/T01/state/isRunning
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-200">
-                  <TypeBadge type="action" />
-                  <div className="flex-1">
-                    <h4 className="text-sm font-semibold text-amber-800 mb-1">Action</h4>
-                    <p className="text-xs text-amber-700 leading-relaxed">
-                      Interface layer, triggers system actions, published by BIS App UI/authenticated external systems/eventflow, subscribed by eventflow
-                    </p>
-                    <p className="text-xs text-amber-600 mt-1 font-mono">
-                      e.g.: device/T01/action/start
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3 p-3 bg-indigo-50 rounded-xl border border-indigo-200">
-                  <TypeBadge type="metrics" />
-                  <div className="flex-1">
-                    <h4 className="text-sm font-semibold text-indigo-800 mb-1">Metrics</h4>
-                    <p className="text-xs text-indigo-700 leading-relaxed">
-                      Time-series data, published by authenticated devices/time-series data sources/sourceflow, subscribed by BIS App UI/authenticated external systems
-                    </p>
-                    <p className="text-xs text-indigo-600 mt-1 font-mono">
-                      e.g.: device/T01/metrics/temperature
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* JSON Format Specification */}
-              <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <h4 className="text-sm font-semibold text-gray-800 mb-3">JSON Format Specification</h4>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-xs text-gray-700 mb-2 font-medium">Interactive Browser accepts JSON in the following format:</p>
-                    <pre className="text-xs bg-gray-900 text-green-400 p-3 rounded-lg overflow-x-auto">
-{`{
-  "version": "v1",
-  "topics": [
-    {
-      "path": "v1/FY-Fab/erp/state/order-registry",
-      "type": "state",
-      "estMps": 0.03,
-      "description": "ERP publishes current open orders registry",
-      "template": {
-        "op": "upsert",
-        "order_id": "PO-202507-0001",
-        "product_id": "P-M6",
-        "qty": 5000
-      }
-    }
-  ]
-}`}
-                    </pre>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div>
-                      <h5 className="font-semibold text-gray-800 mb-2">Required Fields:</h5>
-                      <ul className="space-y-1 text-gray-700">
-                        <li><code className="bg-gray-200 px-1 rounded">version</code> - Schema version (string)</li>
-                        <li><code className="bg-gray-200 px-1 rounded">topics</code> - Array of topic objects</li>
-                        <li><code className="bg-gray-200 px-1 rounded">path</code> - Full UNS path (string)</li>
-                        <li><code className="bg-gray-200 px-1 rounded">type</code> - Topic type: &quot;state&quot;, &quot;action&quot;, or &quot;metrics&quot;</li>
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h5 className="font-semibold text-gray-800 mb-2">Optional Fields:</h5>
-                      <ul className="space-y-1 text-gray-700">
-                        <li><code className="bg-gray-200 px-1 rounded">estMps</code> - Estimated messages per second (number)</li>
-                        <li><code className="bg-gray-200 px-1 rounded">description</code> - Human-readable description (string)</li>
-                        <li><code className="bg-gray-200 px-1 rounded">template</code> - Example payload (object)</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-2 border-t border-gray-300">
-                    <p className="text-xs text-gray-600">
-                      <strong>Note:</strong> The browser will automatically build the namespace tree from the <code className="bg-gray-200 px-1 rounded">path</code> field of each topic. 
-                      Use the Import/Export section above to paste or copy JSON data.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </Card>
-        
         <TotalsBar allLeaves={allLeaves} mqttStats={mqttStats} />
 
         {/* Layout */}
@@ -712,6 +594,194 @@ export default function UNSInteractiveBrowser() {
             <span className="inline-flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5"/>ID kept in payload to avoid topic explosion</span>
           </div>
         </div>
+
+        {/* UNS Topic Types and Standard - Always Expanded */}
+        <Card className="overflow-hidden mt-6">
+          <div className="p-4">
+            <SectionTitle>UNS Topic Types & Standard</SectionTitle>
+          </div>
+          <div className="p-4 pt-0">
+            {/* UNS Standard Definition */}
+            <div className="mb-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <h4 className="text-sm font-semibold text-blue-800 mb-3">UNS Standard Definition</h4>
+              <div className="text-xs text-blue-700 space-y-3">
+                <p>
+                  <strong>Unified Namespace (UNS)</strong> is an industrial data integration method centered around the MQTT protocol. Its objectives are:
+                </p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li><strong>Semantic Clarity & Readability:</strong> Through simple standards, data is given clear meaning, making it easy to understand and use.</li>
+                  <li><strong>Single Source of Truth:</strong> Provides unified access to all data sources within an organization.</li>
+                  <li><strong>Event-Driven Architecture:</strong> Uses publish/subscribe mechanisms to replace polling as much as possible, improving real-time performance and efficiency.</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* UNS Components */}
+            <div className="mb-6 p-4 bg-green-50 rounded-xl border border-green-200">
+              <h4 className="text-sm font-semibold text-green-800 mb-3">UNS Components</h4>
+              <div className="text-xs text-green-700 space-y-3">
+                <p>UNS consists of <strong>Namespace</strong> and <strong>Message Broker</strong>:</p>
+                
+                <div>
+                  <h5 className="font-semibold mb-2">Namespace</h5>
+                  <ul className="list-disc list-inside space-y-1 ml-4">
+                    <li><strong>Tree Structure:</strong> Multi-level URI tree structure using UTF-8 encoded natural language, reflecting hierarchical relationships between data sources. Each node is called a namespace.</li>
+                    <li><strong>Key-Value Data:</strong> Leaf nodes carry data, expressed as key-value pairs using JSON. Prefer shallow, non-array JSON structures for parsing efficiency and compatibility.</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="font-semibold mb-2">Message Broker</h5>
+                  <ul className="list-disc list-inside space-y-1 ml-4">
+                    <li>Responsible for carrying namespace structure and data content. Recommend using MQTT v3.1/v5 compatible brokers for lighter architecture.</li>
+                    <li><strong>Namespace to Topic Mapping:</strong> Maps namespaces to MQTT topics.</li>
+                    <li><strong>Bidirectional Data Distribution:</strong> All data sources and consumers subscribe to the broker as MQTT clients.</li>
+                    <li><strong>Storage Layer Writing:</strong> Message broker is the sole data source for storage layer. Frontend/backend should not directly operate storage layer (database).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Namespace Construction Rules */}
+            <div className="mb-6 p-4 bg-amber-50 rounded-xl border border-amber-200">
+              <h4 className="text-sm font-semibold text-amber-800 mb-3">Namespace Construction Rules</h4>
+              <div className="text-xs text-amber-700 space-y-3">
+                <p>Follow the pattern: <code className="bg-amber-100 px-1 rounded">Version/Site/Function/Station/State|Action|Info|Metrics/topic</code> (similar to ISA95), or from another perspective: <code className="bg-amber-100 px-1 rounded">{`{Business Domain}/{Entity Class}/{Entity ID}/State|Action|Info|Metrics/topic`}</code></p>
+                
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>Use human-readable abbreviations (English preferred)</li>
+                  <li>Maximum 7 levels to ensure performance and maintainability</li>
+                  <li>For large numbers of frequent entity IDs, they should be implicitly recorded in payload to avoid topic explosion</li>
+                </ul>
+
+                <div>
+                  <p className="font-semibold mb-1">Examples:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-4">
+                    <li><code className="bg-amber-100 px-1 rounded">Fuyang/Warehouse/STG1/AGV/AGV1/Action/Startup/</code></li>
+                    <li><code className="bg-amber-100 px-1 rounded">brew/material/MALT-001/Action/inbound</code></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Topic Types */}
+            <div className="mb-6">
+              <h4 className="text-sm font-semibold text-gray-800 mb-3">Topic Types</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-xl border border-green-200">
+                  <TypeBadge type="state" />
+                  <div className="flex-1">
+                    <h5 className="text-sm font-semibold text-green-800 mb-1">State</h5>
+                    <p className="text-xs text-green-700 leading-relaxed mb-2">
+                      System current state
+                    </p>
+                    <div className="text-xs text-green-600">
+                      <p className="font-semibold mb-1">Publisher:</p>
+                      <p className="mb-1">Authenticated external systems/eventflow</p>
+                      <p className="font-semibold mb-1">Subscriber:</p>
+                      <p className="mb-1">BIS App UI/eventflow</p>
+                      <p className="font-mono mt-1">e.g.: device/T01/state/isRunning</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-200">
+                  <TypeBadge type="action" />
+                  <div className="flex-1">
+                    <h5 className="text-sm font-semibold text-amber-800 mb-1">Action</h5>
+                    <p className="text-xs text-amber-700 leading-relaxed mb-2">
+                      Interface layer, triggers system actions
+                    </p>
+                    <div className="text-xs text-amber-600">
+                      <p className="font-semibold mb-1">Publisher:</p>
+                      <p className="mb-1">BIS App UI/authenticated external systems/eventflow</p>
+                      <p className="font-semibold mb-1">Subscriber:</p>
+                      <p className="mb-1">eventflow</p>
+                      <p className="font-mono mt-1">e.g.: device/T01/action/start</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3 p-3 bg-indigo-50 rounded-xl border border-indigo-200">
+                  <TypeBadge type="metrics" />
+                  <div className="flex-1">
+                    <h5 className="text-sm font-semibold text-indigo-800 mb-1">Metrics</h5>
+                    <p className="text-xs text-indigo-700 leading-relaxed mb-2">
+                      Time-series data
+                    </p>
+                    <div className="text-xs text-indigo-600">
+                      <p className="font-semibold mb-1">Publisher:</p>
+                      <p className="mb-1">Authenticated devices/time-series data sources/sourceflow</p>
+                      <p className="font-semibold mb-1">Subscriber:</p>
+                      <p className="mb-1">BIS App UI/authenticated external systems/eventflow</p>
+                      <p className="font-mono mt-1">e.g.: device/T01/metrics/temperature</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-gray-600 mt-3">
+                <strong>Note:</strong> Topic types should be explicitly indicated in the second-to-last level of the Topic path.
+              </p>
+            </div>
+            
+            {/* JSON Format Specification */}
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <h4 className="text-sm font-semibold text-gray-800 mb-3">JSON Format Specification</h4>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs text-gray-700 mb-2 font-medium">Interactive Browser accepts JSON in the following format:</p>
+                  <pre className="text-xs bg-gray-900 text-green-400 p-3 rounded-lg overflow-x-auto">
+{`{
+  "version": "v1",
+  "topics": [
+    {
+      "path": "v1/FY-Fab/erp/state/order-registry",
+      "type": "state",
+      "estMps": 0.03,
+      "description": "ERP publishes current open orders registry",
+      "template": {
+        "op": "upsert",
+        "order_id": "PO-202507-0001",
+        "product_id": "P-M6",
+        "qty": 5000
+      }
+    }
+  ]
+}`}
+                  </pre>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <h5 className="font-semibold text-gray-800 mb-2">Required Fields:</h5>
+                    <ul className="space-y-1 text-gray-700">
+                      <li><code className="bg-gray-200 px-1 rounded">version</code> - Schema version (string)</li>
+                      <li><code className="bg-gray-200 px-1 rounded">topics</code> - Array of topic objects</li>
+                      <li><code className="bg-gray-200 px-1 rounded">path</code> - Full UNS path (string)</li>
+                      <li><code className="bg-gray-200 px-1 rounded">type</code> - Topic type: &quot;state&quot;, &quot;action&quot;, or &quot;metrics&quot;</li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h5 className="font-semibold text-gray-800 mb-2">Optional Fields:</h5>
+                    <ul className="space-y-1 text-gray-700">
+                      <li><code className="bg-gray-200 px-1 rounded">estMps</code> - Estimated messages per second (number)</li>
+                      <li><code className="bg-gray-200 px-1 rounded">description</code> - Human-readable description (string)</li>
+                      <li><code className="bg-gray-200 px-1 rounded">template</code> - Example payload (object)</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div className="pt-2 border-t border-gray-300">
+                  <p className="text-xs text-gray-600">
+                    <strong>Note:</strong> The browser will automatically build the namespace tree from the <code className="bg-gray-200 px-1 rounded">path</code> field of each topic. 
+                    Use the Import/Export section above to paste or copy JSON data.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
       </div>
     </div>
   );
