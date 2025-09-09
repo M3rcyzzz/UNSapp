@@ -13,6 +13,7 @@ export interface MqttStats {
   connected: boolean;
   messageCount: number;
   topics: Map<string, number>; // topic -> message count
+  topicPayloads: Map<string, string>; // topic -> latest payload
   lastMessage?: {
     topic: string;
     timestamp: Date;
@@ -35,6 +36,7 @@ export const useMqtt = (): MqttConnection => {
     connected: false,
     messageCount: 0,
     topics: new Map(),
+    topicPayloads: new Map(),
   });
   
   const statsRef = useRef<MqttStats>(stats);
@@ -93,13 +95,16 @@ export const useMqtt = (): MqttConnection => {
         
         setStats(prev => {
           const newTopics = new Map(prev.topics);
+          const newTopicPayloads = new Map(prev.topicPayloads);
           const currentCount = newTopics.get(topic) || 0;
           newTopics.set(topic, currentCount + 1);
+          newTopicPayloads.set(topic, messageStr);
 
           return {
             ...prev,
             messageCount: prev.messageCount + 1,
             topics: newTopics,
+            topicPayloads: newTopicPayloads,
             lastMessage: {
               topic,
               timestamp: now,
@@ -148,6 +153,7 @@ export const useMqtt = (): MqttConnection => {
         connected: false,
         messageCount: 0,
         topics: new Map(),
+        topicPayloads: new Map(),
       });
     }
   }, [client]);

@@ -4,7 +4,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { ChevronRight, ChevronDown, Copy, Search, Info, HardDrive, Activity, CheckCircle2 } from "lucide-react";
 import { MqttConfigComponent } from './mqtt-config';
 import { MqttStats } from './mqtt-hook';
-import { convertMqttToUnsNodes, mergeUnsWithMqtt } from './mqtt-to-uns';
+import { convertMqttToUnsNodes } from './mqtt-to-uns';
 
 // ---------- Helper UI bits ----------
 const Pill = ({ children }: { children: React.ReactNode }) => (
@@ -133,7 +133,19 @@ type CompactDoc = { version: string; topics: CompactTopic[] };
 
 const toCompact = (root: Node): CompactDoc => {
   const leaves = collectLeaves(root).filter((n) => n.type);
-  const topics: CompactTopic[] = leaves.map((n) => ({ path: n.path, type: n.type, template: n.template, estMps: n.estMps, description: n.description }));
+  const topics: CompactTopic[] = leaves.map((n) => {
+    const topic: CompactTopic = { 
+      path: n.path, 
+      type: n.type, 
+      template: n.template, 
+      estMps: n.estMps 
+    };
+    // Only include description if it exists and is not auto-generated
+    if (n.description && !n.description.includes('Real-time topic with')) {
+      topic.description = n.description;
+    }
+    return topic;
+  });
   return { version: "v1", topics };
 };
 
@@ -394,27 +406,24 @@ export default function UNSInteractiveBrowser() {
   const [exportText, setExportText] = useState<string>(JSON.stringify(toCompact(initialDATA), null, 2));
   const [importText, setImportText] = useState<string>(JSON.stringify(toCompact(initialDATA), null, 2));
 
-  // Merge static data with real-time MQTT data
-  const mergedData = useMemo(() => {
+  // Use MQTT data when connected, otherwise use static data
+  const currentData = useMemo(() => {
     if (!mqttStats || !mqttStats.connected) {
       return data;
     }
     
-    const mqttNodes = convertMqttToUnsNodes(mqttStats);
-    return mergeUnsWithMqtt(data, mqttNodes);
+    // When MQTT is connected, rebuild the tree from MQTT data only
+    return convertMqttToUnsNodes(mqttStats);
   }, [data, mqttStats]);
 
-  const allLeaves = useMemo(() => collectLeaves(mergedData).filter((n) => n.type), [mergedData]);
-  const allNodes = useMemo(() => flatten(mergedData), [mergedData]);
+  const allLeaves = useMemo(() => collectLeaves(currentData).filter((n) => n.type), [currentData]);
+  const allNodes = useMemo(() => flatten(currentData), [currentData]);
 
   useEffect(() => {
     const firstLeaf = allLeaves.find(Boolean);
     setSelected(firstLeaf);
   }, [allLeaves]);
 
-  useEffect(() => {
-    setExportText(JSON.stringify(toCompact(data), null, 2)); // keep full & up-to-date
-  }, [data]);
 
   const toggle = (id: string) => setExpanded((e) => ({ ...e, [id]: !e[id] }));
 
@@ -473,15 +482,29 @@ export default function UNSInteractiveBrowser() {
             <div>
               <SectionTitle>Export (full JSON)</SectionTitle>
               <div className="mt-2">
-                <textarea
-                  className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-white transition-colors"
-                  value={exportText}
-                  onChange={(e) => setExportText(e.target.value)}
-                />
-                <div className="mt-2 flex items-center gap-2">
-                  <button onClick={() => copyToClipboard(exportText)} className="px-3 py-1.5 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center gap-1"><Copy className="w-4 h-4"/>Copy</button>
-                  <span className="text-xs text-gray-600 font-medium">Format: {`{"version":"v1","topics":[{"path","type","template"}]}`}</span>
-                </div>
+                <button 
+                  onClick={() => {
+                    const exportData = toCompact(currentData);
+                    setExportText(JSON.stringify(exportData, null, 2));
+                  }}
+                  className="w-full px-4 py-3 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center justify-center gap-2"
+                >
+                  <Copy className="w-4 h-4"/>
+                  生成当前Namespace Tree的完整JSON
+                </button>
+                {exportText && (
+                  <div className="mt-3">
+                    <textarea
+                      className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-white transition-colors"
+                      value={exportText}
+                      readOnly
+                    />
+                    <div className="mt-2 flex items-center gap-2">
+                      <button onClick={() => copyToClipboard(exportText)} className="px-3 py-1.5 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center gap-1"><Copy className="w-4 h-4"/>Copy</button>
+                      <span className="text-xs text-gray-600 font-medium">Format: {`{"version":"v1","topics":[{"path","type","template"}]}`}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div>
@@ -629,14 +652,14 @@ export default function UNSInteractiveBrowser() {
             <div className="border-b p-3 px-4 flex items-center justify-between">
               <SectionTitle>Namespace Tree</SectionTitle>
               <div className="flex items-center gap-2">
-                <Pill>{allNodes.length} nodes</Pill>
+                <Pill>{allLeaves.length} namespaces</Pill>
                 <button onClick={expandAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-blue-200 text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 hover:border-blue-300 transition-colors"><ChevronDown className="w-4 h-4"/>Expand</button>
                 <button onClick={collapseAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-orange-200 text-orange-700 bg-orange-50 rounded-xl hover:bg-orange-100 hover:border-orange-300 transition-colors"><ChevronRight className="w-4 h-4"/>Collapse</button>
               </div>
             </div>
             <div className="max-h-[70vh] overflow-auto p-2">
               <TreeNode
-                node={data}
+                node={currentData}
                 level={0}
                 expanded={expanded}
                 onToggle={toggle}

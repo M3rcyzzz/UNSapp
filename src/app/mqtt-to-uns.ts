@@ -13,6 +13,7 @@ export interface MqttStats {
   connected: boolean;
   messageCount: number;
   topics: Map<string, number>;
+  topicPayloads: Map<string, string>;
   lastMessage?: {
     topic: string;
     timestamp: Date;
@@ -56,11 +57,30 @@ export const calculateRealTimeMps = (
 };
 
 /**
- * Convert MQTT stats to UNS Node structure
+ * Analyze payload and create template
  */
-export const convertMqttToUnsNodes = (mqttStats: MqttStats): Node[] => {
+export const analyzePayload = (payload: string): Record<string, unknown> | null => {
+  try {
+    // Try to parse as JSON first
+    const parsed = JSON.parse(payload);
+    if (typeof parsed === 'object' && parsed !== null) {
+      return parsed;
+    }
+  } catch {
+    // If not JSON, try to analyze as other formats
+  }
+  
+  // If not JSON, return as string value
+  return { value: payload };
+};
+
+/**
+ * Convert MQTT stats to complete UNS Node structure (rebuild from scratch)
+ */
+export const convertMqttToUnsNodes = (mqttStats: MqttStats): Node => {
   if (!mqttStats.connected || mqttStats.topics.size === 0) {
-    return [];
+    // Return empty root node
+    return { id: "root", name: "root", path: "root", children: [] };
   }
 
   const rootMap = new Map<string, Node>();
@@ -102,31 +122,32 @@ export const convertMqttToUnsNodes = (mqttStats: MqttStats): Node[] => {
     if (topicType) {
       node.type = topicType;
       node.estMps = calculateRealTimeMps(messageCount);
-      node.description = `Real-time topic with ${messageCount} messages`;
+      // Remove auto-generated description - let it be undefined
       
-      // Try to parse last message as template
-      if (mqttStats.lastMessage && mqttStats.lastMessage.topic === topic) {
-        try {
-          const payload = JSON.parse(mqttStats.lastMessage.payload);
-          node.template = payload;
-        } catch {
-          // If not JSON, store as string
-          node.template = { raw: mqttStats.lastMessage.payload };
+      // Analyze payload to create template
+      const payload = mqttStats.topicPayloads.get(topic);
+      if (payload) {
+        const template = analyzePayload(payload);
+        if (template) {
+          node.template = template;
         }
       }
     }
   });
 
-  // Return root nodes (top-level namespaces)
-  const rootNodes: Node[] = [];
+  // Find the root node (the one with the shortest path)
+  let rootNode: Node | null = null;
+  let minPathLength = Infinity;
+  
   rootMap.forEach((node) => {
-    const segments = parseUnsPath(node.path);
-    if (segments.length === 1) { // Top-level namespace
-      rootNodes.push(node);
+    const pathLength = parseUnsPath(node.path).length;
+    if (pathLength < minPathLength) {
+      minPathLength = pathLength;
+      rootNode = node;
     }
   });
 
-  return rootNodes;
+  return rootNode || { id: "root", name: "root", path: "root", children: [] };
 };
 
 /**
