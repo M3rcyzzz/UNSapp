@@ -2,6 +2,9 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import { ChevronRight, ChevronDown, Copy, Search, Info, HardDrive, Activity, CheckCircle2 } from "lucide-react";
+import { MqttConfigComponent } from './mqtt-config';
+import { MqttStats } from './mqtt-hook';
+import { convertMqttToUnsNodes, mergeUnsWithMqtt } from './mqtt-to-uns';
 
 // ---------- Helper UI bits ----------
 const Pill = ({ children }: { children: React.ReactNode }) => (
@@ -324,18 +327,35 @@ const Details = ({ node }: { node?: Node }) => {
 };
 
 // ---------- Totals ----------
-const TotalsBar = ({ allLeaves }: { allLeaves: Node[] }) => {
+const TotalsBar = ({ allLeaves, mqttStats }: { allLeaves: Node[], mqttStats?: MqttStats | null }) => {
   const totals = useMemo(() => {
     const sum = (t?: TopicType) => allLeaves.filter((n) => n.type && (!t || n.type === t)).reduce((acc, n) => acc + (n.estMps || 0), 0);
     return { metrics: sum("metrics"), others: sum("state") + sum("action"), all: sum(undefined) };
   }, [allLeaves]);
 
+  const isLiveData = mqttStats?.connected || false;
+
   return (
     <Card>
       <div className="p-4 flex flex-wrap items-center gap-4">
-        <div className="flex items-center gap-2"><Activity className="w-4 h-4 text-indigo-600"/><span className="text-sm text-gray-600">Metrics</span><span className="font-mono text-lg font-bold text-indigo-700">{totals.metrics.toFixed(3)} msg/s</span></div>
-        <div className="flex items-center gap-2"><HardDrive className="w-4 h-4 text-slate-600"/><span className="text-sm text-gray-600">State/Action</span><span className="font-mono text-lg font-bold text-slate-700">{totals.others.toFixed(3)} msg/s</span></div>
-        <div className="ml-auto flex items-center gap-2"><Info className="w-4 h-4 text-gray-500"/><span className="text-sm text-gray-600">Total</span><span className="font-mono text-lg font-bold text-gray-800">{totals.all.toFixed(3)} msg/s</span></div>
+        <div className="flex items-center gap-2">
+          <Activity className="w-4 h-4 text-indigo-600"/>
+          <span className="text-sm text-gray-600">Metrics</span>
+          <span className="font-mono text-lg font-bold text-indigo-700">{totals.metrics.toFixed(3)} msg/s</span>
+          {isLiveData && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">LIVE</span>}
+        </div>
+        <div className="flex items-center gap-2">
+          <HardDrive className="w-4 h-4 text-slate-600"/>
+          <span className="text-sm text-gray-600">State/Action</span>
+          <span className="font-mono text-lg font-bold text-slate-700">{totals.others.toFixed(3)} msg/s</span>
+          {isLiveData && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">LIVE</span>}
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <Info className="w-4 h-4 text-gray-500"/>
+          <span className="text-sm text-gray-600">Total</span>
+          <span className="font-mono text-lg font-bold text-gray-800">{totals.all.toFixed(3)} msg/s</span>
+          {isLiveData && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">LIVE</span>}
+        </div>
       </div>
     </Card>
   );
@@ -369,12 +389,23 @@ export default function UNSInteractiveBrowser() {
   const [selected, setSelected] = useState<Node>();
   const [search, setSearch] = useState("");
   const [showTopicTypes, setShowTopicTypes] = useState(false);
+  const [mqttStats, setMqttStats] = useState<MqttStats | null>(null);
 
   const [exportText, setExportText] = useState<string>(JSON.stringify(toCompact(initialDATA), null, 2));
   const [importText, setImportText] = useState<string>(JSON.stringify(toCompact(initialDATA), null, 2));
 
-  const allLeaves = useMemo(() => collectLeaves(data).filter((n) => n.type), [data]);
-  const allNodes = useMemo(() => flatten(data), [data]);
+  // Merge static data with real-time MQTT data
+  const mergedData = useMemo(() => {
+    if (!mqttStats || !mqttStats.connected) {
+      return data;
+    }
+    
+    const mqttNodes = convertMqttToUnsNodes(mqttStats);
+    return mergeUnsWithMqtt(data, mqttNodes);
+  }, [data, mqttStats]);
+
+  const allLeaves = useMemo(() => collectLeaves(mergedData).filter((n) => n.type), [mergedData]);
+  const allNodes = useMemo(() => flatten(mergedData), [mergedData]);
 
   useEffect(() => {
     const firstLeaf = allLeaves.find(Boolean);
@@ -410,6 +441,11 @@ export default function UNSInteractiveBrowser() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-4">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">UNS Interactive Browser </h1>
+        </div>
+
+        {/* MQTT Live Connection */}
+        <div className="mb-6">
+          <MqttConfigComponent onStatsUpdate={setMqttStats} />
         </div>
 
         {/* Controls */}
@@ -524,11 +560,68 @@ export default function UNSInteractiveBrowser() {
                   </div>
                 </div>
               </div>
+              
+              {/* JSON Format Specification */}
+              <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-800 mb-3">JSON Format Specification</h4>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-gray-700 mb-2 font-medium">Interactive Browser accepts JSON in the following format:</p>
+                    <pre className="text-xs bg-gray-900 text-green-400 p-3 rounded-lg overflow-x-auto">
+{`{
+  "version": "v1",
+  "topics": [
+    {
+      "path": "v1/FY-Fab/erp/state/order-registry",
+      "type": "state",
+      "estMps": 0.03,
+      "description": "ERP publishes current open orders registry",
+      "template": {
+        "op": "upsert",
+        "order_id": "PO-202507-0001",
+        "product_id": "P-M6",
+        "qty": 5000
+      }
+    }
+  ]
+}`}
+                    </pre>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                      <h5 className="font-semibold text-gray-800 mb-2">Required Fields:</h5>
+                      <ul className="space-y-1 text-gray-700">
+                        <li><code className="bg-gray-200 px-1 rounded">version</code> - Schema version (string)</li>
+                        <li><code className="bg-gray-200 px-1 rounded">topics</code> - Array of topic objects</li>
+                        <li><code className="bg-gray-200 px-1 rounded">path</code> - Full UNS path (string)</li>
+                        <li><code className="bg-gray-200 px-1 rounded">type</code> - Topic type: &quot;state&quot;, &quot;action&quot;, or &quot;metrics&quot;</li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <h5 className="font-semibold text-gray-800 mb-2">Optional Fields:</h5>
+                      <ul className="space-y-1 text-gray-700">
+                        <li><code className="bg-gray-200 px-1 rounded">estMps</code> - Estimated messages per second (number)</li>
+                        <li><code className="bg-gray-200 px-1 rounded">description</code> - Human-readable description (string)</li>
+                        <li><code className="bg-gray-200 px-1 rounded">template</code> - Example payload (object)</li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-2 border-t border-gray-300">
+                    <p className="text-xs text-gray-600">
+                      <strong>Note:</strong> The browser will automatically build the namespace tree from the <code className="bg-gray-200 px-1 rounded">path</code> field of each topic. 
+                      Use the Import/Export section above to paste or copy JSON data.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </Card>
         
-        <TotalsBar allLeaves={allLeaves} />
+        <TotalsBar allLeaves={allLeaves} mqttStats={mqttStats} />
 
         {/* Layout */}
         <div className="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
