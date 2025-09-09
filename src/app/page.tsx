@@ -388,8 +388,7 @@ export default function UNSInteractiveBrowser() {
     <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-4">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">UNS Interactive Browser <span className="text-gray-400 text-lg">– FY-Fab (v1)</span></h1>
-          <p className="text-sm text-gray-600 mt-1">Browse topics, view payload templates, run self-tests, and <b>copy/paste</b> full JSON for import/export.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">UNS Interactive Browser </h1>
         </div>
 
         {/* Controls */}
@@ -408,7 +407,6 @@ export default function UNSInteractiveBrowser() {
             <TypeBadge type="metrics" />
             <TypeBadge type="state" />
             <TypeBadge type="action" />
-            <TypeBadge type="info" />
           </div>
         </div>
 
