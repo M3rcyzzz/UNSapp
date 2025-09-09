@@ -342,9 +342,30 @@ const TotalsBar = ({ allLeaves }: { allLeaves: Node[] }) => {
 };
 
 // ---------- Main ----------
+// Helper function to get all node IDs for expansion
+const getAllNodeIds = (node: Node): string[] => {
+  const ids = [node.id];
+  if (node.children) {
+    node.children.forEach(child => {
+      ids.push(...getAllNodeIds(child));
+    });
+  }
+  return ids;
+};
+
+// Create expanded state with all nodes expanded
+const createExpandedState = (rootNode: Node): Record<string, boolean> => {
+  const allIds = getAllNodeIds(rootNode);
+  const expanded: Record<string, boolean> = {};
+  allIds.forEach(id => {
+    expanded[id] = true;
+  });
+  return expanded;
+};
+
 export default function UNSInteractiveBrowser() {
   const [data, setData] = useState<Node>(initialDATA);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({ root: true, erp: true, plm: true, tool: true, wh: true, sched: true, sm: true, ch: true });
+  const [expanded, setExpanded] = useState<Record<string, boolean>>(createExpandedState(initialDATA));
   const [selected, setSelected] = useState<Node>();
   const [search, setSearch] = useState("");
   const [showTopicTypes, setShowTopicTypes] = useState(false);
