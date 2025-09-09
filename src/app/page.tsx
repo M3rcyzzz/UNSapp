@@ -13,7 +13,6 @@ const TypeBadge = ({ type }: { type: string }) => {
     metrics: "bg-indigo-50 text-indigo-700 border-indigo-200",
     state: "bg-green-50 text-green-700 border-green-200",
     action: "bg-amber-50 text-amber-700 border-amber-200",
-    info: "bg-sky-50 text-sky-700 border-sky-200",
   };
   return (
     <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${map[type] || "bg-gray-50 text-gray-700 border-gray-200"}`}>
@@ -31,7 +30,7 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 );
 
 // ---------- Data Model ----------
-export type TopicType = "metrics" | "state" | "action" | "info";
+export type TopicType = "metrics" | "state" | "action";
 
 export type Node = {
   id: string;
@@ -186,9 +185,6 @@ function runSelfTests(root: Node) {
   const t3 = leaves.every((n) => !n.template || !Object.values(n.template).some((v) => Array.isArray(v)));
   results.push({ name: "Template shallow (no arrays)", pass: t3 });
 
-  // 4) plan_draft exists and is info
-  const planDraft = leaves.find((n) => n.path.endsWith("/info/plan_draft"));
-  results.push({ name: "plan_draft exists & is info", pass: !!planDraft && planDraft.type === "info" });
 
   // 5) export→import roundtrip keeps leaf count
   const compact = toCompact(root);
@@ -197,7 +193,7 @@ function runSelfTests(root: Node) {
   results.push({ name: "Export/Import roundtrip leaf count", pass: t5 });
 
   // 6) All leaf types are valid
-  const validTypes: TopicType[] = ["metrics", "state", "action", "info"];
+  const validTypes: TopicType[] = ["metrics", "state", "action"];
   const t6 = leaves.every((n) => validTypes.includes(n.type!));
   results.push({ name: "Leaf types valid", pass: t6 });
 
@@ -310,7 +306,6 @@ const Details = ({ node }: { node?: Node }) => {
               {node.type === "metrics" && <li>Published by devices / sourceflow</li>}
               {node.type === "state" && <li>Published by eventflow services</li>}
               {node.type === "action" && <li>Published by eventflow HMIs/APIs</li>}
-              {node.type === "info" && <li>Published by sourceflow/eventflow</li>}
               {!node.type && <li>Folder level (no publisher)</li>}
             </ul>
           </div>
@@ -318,7 +313,7 @@ const Details = ({ node }: { node?: Node }) => {
             <SectionTitle>Subscribing</SectionTitle>
             <ul className="mt-1 text-sm text-gray-700 list-disc list-inside">
               {node.type === "metrics" && <li>Subscribed by BI dashboards / eventflow</li>}
-              {(node.type === "state" || node.type === "action" || node.type === "info") && <li>Subscribed by eventflow microservices</li>}
+              {(node.type === "state" || node.type === "action") && <li>Subscribed by eventflow microservices</li>}
               {!node.type && <li>Folder level (no subscriber)</li>}
             </ul>
           </div>
@@ -332,15 +327,15 @@ const Details = ({ node }: { node?: Node }) => {
 const TotalsBar = ({ allLeaves }: { allLeaves: Node[] }) => {
   const totals = useMemo(() => {
     const sum = (t?: TopicType) => allLeaves.filter((n) => n.type && (!t || n.type === t)).reduce((acc, n) => acc + (n.estMps || 0), 0);
-    return { metrics: sum("metrics"), others: sum("state") + sum("action") + sum("info"), all: sum(undefined) };
+    return { metrics: sum("metrics"), others: sum("state") + sum("action"), all: sum(undefined) };
   }, [allLeaves]);
 
   return (
     <Card>
       <div className="p-4 flex flex-wrap items-center gap-4">
-        <div className="flex items-center gap-2"><Activity className="w-4 h-4 text-indigo-600"/><span className="text-sm text-gray-600">Metrics</span><span className="font-mono text-sm">{totals.metrics.toFixed(3)} msg/s</span></div>
-        <div className="flex items-center gap-2"><HardDrive className="w-4 h-4 text-slate-600"/><span className="text-sm text-gray-600">State/Action/Info</span><span className="font-mono text-sm">{totals.others.toFixed(3)} msg/s</span></div>
-        <div className="ml-auto flex items-center gap-2"><Info className="w-4 h-4 text-gray-500"/><span className="text-sm text-gray-600">Total</span><span className="font-mono text-sm">{totals.all.toFixed(3)} msg/s</span></div>
+        <div className="flex items-center gap-2"><Activity className="w-4 h-4 text-indigo-600"/><span className="text-sm text-gray-600">Metrics</span><span className="font-mono text-lg font-bold text-indigo-700">{totals.metrics.toFixed(3)} msg/s</span></div>
+        <div className="flex items-center gap-2"><HardDrive className="w-4 h-4 text-slate-600"/><span className="text-sm text-gray-600">State/Action</span><span className="font-mono text-lg font-bold text-slate-700">{totals.others.toFixed(3)} msg/s</span></div>
+        <div className="ml-auto flex items-center gap-2"><Info className="w-4 h-4 text-gray-500"/><span className="text-sm text-gray-600">Total</span><span className="font-mono text-lg font-bold text-gray-800">{totals.all.toFixed(3)} msg/s</span></div>
       </div>
     </Card>
   );
@@ -352,6 +347,7 @@ export default function UNSInteractiveBrowser() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({ root: true, erp: true, plm: true, tool: true, wh: true, sched: true, sm: true, ch: true });
   const [selected, setSelected] = useState<Node>();
   const [search, setSearch] = useState("");
+  const [showTopicTypes, setShowTopicTypes] = useState(false);
 
   const [exportText, setExportText] = useState<string>(JSON.stringify(toCompact(initialDATA), null, 2));
   const [importText, setImportText] = useState<string>(JSON.stringify(toCompact(initialDATA), null, 2));
@@ -451,6 +447,68 @@ export default function UNSInteractiveBrowser() {
         </Card>
 
         <SelfTestPanel root={data} />
+        
+        {/* Topic Types Description - Collapsible */}
+        <Card className="overflow-hidden">
+          <div 
+            className="p-4 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-200"
+            onClick={() => setShowTopicTypes(!showTopicTypes)}
+          >
+            <div className="flex items-center justify-between">
+              <SectionTitle>UNS Topic Types</SectionTitle>
+              {showTopicTypes ? (
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-gray-500" />
+              )}
+            </div>
+          </div>
+          {showTopicTypes && (
+            <div className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-xl border border-green-200">
+                  <TypeBadge type="state" />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-semibold text-green-800 mb-1">State</h4>
+                    <p className="text-xs text-green-700 leading-relaxed">
+                      System current state, published by authenticated external systems/eventflow, subscribed by BIS App UI/eventflow
+                    </p>
+                    <p className="text-xs text-green-600 mt-1 font-mono">
+                      e.g.: device/T01/state/isRunning
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-200">
+                  <TypeBadge type="action" />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-semibold text-amber-800 mb-1">Action</h4>
+                    <p className="text-xs text-amber-700 leading-relaxed">
+                      Interface layer, triggers system actions, published by BIS App UI/authenticated external systems/eventflow, subscribed by eventflow
+                    </p>
+                    <p className="text-xs text-amber-600 mt-1 font-mono">
+                      e.g.: device/T01/action/start
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3 p-3 bg-indigo-50 rounded-xl border border-indigo-200">
+                  <TypeBadge type="metrics" />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-semibold text-indigo-800 mb-1">Metrics</h4>
+                    <p className="text-xs text-indigo-700 leading-relaxed">
+                      Time-series data, published by authenticated devices/time-series data sources/sourceflow, subscribed by BIS App UI/authenticated external systems
+                    </p>
+                    <p className="text-xs text-indigo-600 mt-1 font-mono">
+                      e.g.: device/T01/metrics/temperature
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </Card>
+        
         <TotalsBar allLeaves={allLeaves} />
 
         {/* Layout */}
@@ -496,7 +554,7 @@ export default function UNSInteractiveBrowser() {
           <div className="flex flex-wrap items-center gap-3">
             <span className="font-semibold">Legend:</span>
             <span className="inline-flex items-center gap-1"><Activity className="w-3.5 h-3.5"/>metrics → time-series DB</span>
-            <span className="inline-flex items-center gap-1"><HardDrive className="w-3.5 h-3.5"/>state/action/info → JSONB (transactional)</span>
+            <span className="inline-flex items-center gap-1"><HardDrive className="w-3.5 h-3.5"/>state/action → JSONB (transactional)</span>
             <span className="inline-flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5"/>ID kept in payload to avoid topic explosion</span>
           </div>
         </div>

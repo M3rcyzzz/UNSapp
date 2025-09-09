@@ -19,8 +19,8 @@
     },
 
     {
-      "path": "v1/FY-Fab/plm/info/product-master-P-M5",
-      "type": "info",
+      "path": "v1/FY-Fab/plm/state/product-master-P-M5",
+      "type": "state",
       "estMps": 0.005,
       "description": "Product master: P-M5 screw (wire → CUTWIRE → COLD → THREAD → HT).",
       "template": {
@@ -47,8 +47,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/plm/info/product-master-P-M6",
-      "type": "info",
+      "path": "v1/FY-Fab/plm/state/product-master-P-M6",
+      "type": "state",
       "estMps": 0.005,
       "description": "Product master: P-M6 screw (wire → CUTWIRE → COLD → THREAD → HT).",
       "template": {
@@ -75,8 +75,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/plm/info/product-master-P-M8",
-      "type": "info",
+      "path": "v1/FY-Fab/plm/state/product-master-P-M8",
+      "type": "state",
       "estMps": 0.005,
       "description": "Product master: P-M8 bolt (wire → CUTWIRE → COLD → THREAD → HT).",
       "template": {
@@ -103,8 +103,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/plm/info/product-master-P-FL6",
-      "type": "info",
+      "path": "v1/FY-Fab/plm/state/product-master-P-FL6",
+      "type": "state",
       "estMps": 0.005,
       "description": "Product master: M6 flange bolt (wire → CUTWIRE → COLD → THREAD → HT).",
       "template": {
@@ -131,8 +131,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/plm/info/product-master-P-PANEL1",
-      "type": "info",
+      "path": "v1/FY-Fab/plm/state/product-master-P-PANEL1",
+      "type": "state",
       "estMps": 0.005,
       "description": "Product master: Sheet panel A (sheet → LASER → BEND → COAT → ASSY).",
       "template": {
@@ -157,8 +157,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/plm/info/product-master-P-PANEL2",
-      "type": "info",
+      "path": "v1/FY-Fab/plm/state/product-master-P-PANEL2",
+      "type": "state",
       "estMps": 0.005,
       "description": "Product master: Sheet panel B (sheet → LASER → BEND → COAT → ASSY).",
       "template": {
@@ -184,8 +184,8 @@
     },
 
     {
-      "path": "v1/FY-Fab/tooling/info/mold-MOLD_M5",
-      "type": "info",
+      "path": "v1/FY-Fab/tooling/state/mold-MOLD_M5",
+      "type": "state",
       "estMps": 0.002,
       "description": "Cold header mold for M5 screws.",
       "template": {
@@ -197,8 +197,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/tooling/info/mold-MOLD_M6",
-      "type": "info",
+      "path": "v1/FY-Fab/tooling/state/mold-MOLD_M6",
+      "type": "state",
       "estMps": 0.002,
       "description": "Cold header mold for M6 screws.",
       "template": {
@@ -210,8 +210,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/tooling/info/mold-MOLD_M8",
-      "type": "info",
+      "path": "v1/FY-Fab/tooling/state/mold-MOLD_M8",
+      "type": "state",
       "estMps": 0.002,
       "description": "Cold header mold for M8 bolts.",
       "template": {
@@ -223,8 +223,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/tooling/info/mold-MOLD_FLANGE_M6",
-      "type": "info",
+      "path": "v1/FY-Fab/tooling/state/mold-MOLD_FLANGE_M6",
+      "type": "state",
       "estMps": 0.002,
       "description": "Cold header mold for M6 flange bolts.",
       "template": {
@@ -236,8 +236,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/tooling/info/mold-MOLD_STUD",
-      "type": "info",
+      "path": "v1/FY-Fab/tooling/state/mold-MOLD_STUD",
+      "type": "state",
       "estMps": 0.002,
       "description": "Cold header mold for studs.",
       "template": {
@@ -249,8 +249,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/tooling/info/mold-ROLL_STD",
-      "type": "info",
+      "path": "v1/FY-Fab/tooling/state/mold-ROLL_STD",
+      "type": "state",
       "estMps": 0.002,
       "description": "Thread rolling dies for standard thread.",
       "template": {
@@ -262,8 +262,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/tooling/info/mold-ROLL_SELF_TAP",
-      "type": "info",
+      "path": "v1/FY-Fab/tooling/state/mold-ROLL_SELF_TAP",
+      "type": "state",
       "estMps": 0.002,
       "description": "Thread rolling dies for self-tapping thread.",
       "template": {
@@ -275,8 +275,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/tooling/info/changeover-matrix-cold-header",
-      "type": "info",
+      "path": "v1/FY-Fab/tooling/state/changeover-matrix-cold-header",
+      "type": "state",
       "estMps": 0.001,
       "description": "Setup time matrix (minutes) for cold headers CH01/CH02 by product switch.",
       "template": {
@@ -291,8 +291,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/tooling/info/changeover-matrix-thread-roller",
-      "type": "info",
+      "path": "v1/FY-Fab/tooling/state/changeover-matrix-thread-roller",
+      "type": "state",
       "estMps": 0.001,
       "description": "Setup time matrix (minutes) for thread rollers TR01/TR02 by product switch.",
       "template": {
@@ -421,8 +421,8 @@
     },
 
     {
-      "path": "v1/FY-Fab/workforce/info/workgroup-OP_LASER",
-      "type": "info",
+      "path": "v1/FY-Fab/workforce/state/workgroup-OP_LASER",
+      "type": "state",
       "estMps": 0.001,
       "description": "Operator group for LASER.",
       "template": {
@@ -433,8 +433,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/workforce/info/workgroup-OP_BEND",
-      "type": "info",
+      "path": "v1/FY-Fab/workforce/state/workgroup-OP_BEND",
+      "type": "state",
       "estMps": 0.001,
       "description": "Operator group for BEND.",
       "template": {
@@ -445,8 +445,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/workforce/info/workgroup-OP_COAT",
-      "type": "info",
+      "path": "v1/FY-Fab/workforce/state/workgroup-OP_COAT",
+      "type": "state",
       "estMps": 0.001,
       "description": "Operator group for COAT.",
       "template": {
@@ -457,8 +457,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/workforce/info/workgroup-OP_ASSY",
-      "type": "info",
+      "path": "v1/FY-Fab/workforce/state/workgroup-OP_ASSY",
+      "type": "state",
       "estMps": 0.001,
       "description": "Operator group for ASSY.",
       "template": {
@@ -469,8 +469,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/workforce/info/workgroup-OP_CUT",
-      "type": "info",
+      "path": "v1/FY-Fab/workforce/state/workgroup-OP_CUT",
+      "type": "state",
       "estMps": 0.001,
       "description": "Operator group for CUTWIRE.",
       "template": {
@@ -481,8 +481,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/workforce/info/workgroup-OP_COLD",
-      "type": "info",
+      "path": "v1/FY-Fab/workforce/state/workgroup-OP_COLD",
+      "type": "state",
       "estMps": 0.001,
       "description": "Operator group for COLD.",
       "template": {
@@ -493,8 +493,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/workforce/info/workgroup-OP_THREAD",
-      "type": "info",
+      "path": "v1/FY-Fab/workforce/state/workgroup-OP_THREAD",
+      "type": "state",
       "estMps": 0.001,
       "description": "Operator group for THREAD.",
       "template": {
@@ -505,8 +505,8 @@
       }
     },
     {
-      "path": "v1/FY-Fab/workforce/info/workgroup-OP_HEAT",
-      "type": "info",
+      "path": "v1/FY-Fab/workforce/state/workgroup-OP_HEAT",
+      "type": "state",
       "estMps": 0.001,
       "description": "Operator group for HT.",
       "template": {
@@ -518,8 +518,8 @@
     },
 
     {
-      "path": "v1/FY-Fab/sched/info/plan-draft",
-      "type": "info",
+      "path": "v1/FY-Fab/sched/state/plan-draft",
+      "type": "state",
       "estMps": 0.2,
       "description": "Draft production plan proposals before dispatch (does not start execution).",
       "template": {
@@ -659,8 +659,8 @@
     },
 
     {
-      "path": "v1/FY-Fab/sheet/COAT01/info/clean-rule",
-      "type": "info",
+      "path": "v1/FY-Fab/sheet/COAT01/state/clean-rule",
+      "type": "state",
       "estMps": 0.001,
       "description": "Powder coating cleaning rule.",
       "template": { "min_clean_time_min": 10, "trigger_on_color_change": "Y" }
