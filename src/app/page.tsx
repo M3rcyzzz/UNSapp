@@ -401,6 +401,7 @@ export default function UNSInteractiveBrowser() {
   const [selected, setSelected] = useState<Node>();
   const [search, setSearch] = useState("");
   const [showTopicTypes, setShowTopicTypes] = useState(false);
+  const [showExportImport, setShowExportImport] = useState(false);
   const [mqttStats, setMqttStats] = useState<MqttStats | null>(null);
 
   const [exportText, setExportText] = useState<string>(JSON.stringify(toCompact(initialDATA), null, 2));
@@ -457,71 +458,68 @@ export default function UNSInteractiveBrowser() {
           <MqttConfigComponent onStatsUpdate={setMqttStats} />
         </div>
 
-        {/* Controls */}
-        <div className="flex flex-wrap items-center gap-3 mb-4">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-2 top-2.5 text-gray-400" />
-            <input
-              placeholder="Search name/path/description..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-3 py-2 border rounded-xl bg-white text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
-              style={{ width: 320 }}
-            />
-          </div>
-          <div className="ml-auto flex items-center gap-2 text-xs text-gray-600">
-            <TypeBadge type="metrics" />
-            <TypeBadge type="state" />
-            <TypeBadge type="action" />
-          </div>
-        </div>
 
-        {/* Copy/Paste Import/Export */}
-        <Card>
-          <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div>
-              <SectionTitle>Export (full JSON)</SectionTitle>
-              <div className="mt-2">
-                <button 
-                  onClick={() => {
-                    const exportData = toCompact(currentData);
-                    setExportText(JSON.stringify(exportData, null, 2));
-                  }}
-                  className="w-full px-4 py-3 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center justify-center gap-2"
-                >
-                  <Copy className="w-4 h-4"/>
-                  生成当前Namespace Tree的完整JSON
-                </button>
-                {exportText && (
-                  <div className="mt-3">
-                    <textarea
-                      className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-white transition-colors"
-                      value={exportText}
-                      readOnly
-                    />
-                    <div className="mt-2 flex items-center gap-2">
-                      <button onClick={() => copyToClipboard(exportText)} className="px-3 py-1.5 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center gap-1"><Copy className="w-4 h-4"/>Copy</button>
-                      <span className="text-xs text-gray-600 font-medium">Format: {`{"version":"v1","topics":[{"path","type","template"}]}`}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
+        {/* Copy/Paste Import/Export - Collapsible */}
+        <Card className="overflow-hidden">
+          <div 
+            className="p-4 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-200"
+            onClick={() => setShowExportImport(!showExportImport)}
+          >
+            <div className="flex items-center justify-between">
+              <SectionTitle>Export / Import</SectionTitle>
+              {showExportImport ? (
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-gray-500" />
+              )}
             </div>
-            <div>
-              <SectionTitle>Import (paste JSON here)</SectionTitle>
-              <div className="mt-2">
-                <textarea
-                  className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-gray-50 transition-colors"
-                  value={importText}
-                  onChange={(e) => setImportText(e.target.value)}
-                />
-                <div className="mt-2 flex items-center gap-2">
-                  <button onClick={onImportFromPaste} className="px-3 py-1.5 text-sm border border-green-200 text-green-700 bg-green-50 rounded-xl hover:bg-green-100 hover:border-green-300 transition-colors">Import from paste</button>
-                  <span className="text-xs text-gray-600 font-medium">This will rebuild the tree from {`topics[].path`}</span>
+          </div>
+          {showExportImport && (
+            <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <SectionTitle>Export (full JSON)</SectionTitle>
+                <div className="mt-2">
+                  <button 
+                    onClick={() => {
+                      const exportData = toCompact(currentData);
+                      setExportText(JSON.stringify(exportData, null, 2));
+                    }}
+                    className="w-full px-4 py-3 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center justify-center gap-2"
+                  >
+                    <Copy className="w-4 h-4"/>
+                    生成当前Namespace Tree的完整JSON
+                  </button>
+                  {exportText && (
+                    <div className="mt-3">
+                      <textarea
+                        className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-white transition-colors"
+                        value={exportText}
+                        readOnly
+                      />
+                      <div className="mt-2 flex items-center gap-2">
+                        <button onClick={() => copyToClipboard(exportText)} className="px-3 py-1.5 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center gap-1"><Copy className="w-4 h-4"/>Copy</button>
+                        <span className="text-xs text-gray-600 font-medium">Format: {`{"version":"v1","topics":[{"path","type","template"}]}`}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div>
+                <SectionTitle>Import (paste JSON here)</SectionTitle>
+                <div className="mt-2">
+                  <textarea
+                    className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-gray-50 transition-colors"
+                    value={importText}
+                    onChange={(e) => setImportText(e.target.value)}
+                  />
+                  <div className="mt-2 flex items-center gap-2">
+                    <button onClick={onImportFromPaste} className="px-3 py-1.5 text-sm border border-green-200 text-green-700 bg-green-50 rounded-xl hover:bg-green-100 hover:border-green-300 transition-colors">Import from paste</button>
+                    <span className="text-xs text-gray-600 font-medium">This will rebuild the tree from {`topics[].path`}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </Card>
 
         <SelfTestPanel root={data} />
@@ -648,27 +646,48 @@ export default function UNSInteractiveBrowser() {
 
         {/* Layout */}
         <div className="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <Card className="lg:col-span-5 overflow-hidden">
-            <div className="border-b p-3 px-4 flex items-center justify-between">
-              <SectionTitle>Namespace Tree</SectionTitle>
-              <div className="flex items-center gap-2">
-                <Pill>{allLeaves.length} namespaces</Pill>
-                <button onClick={expandAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-blue-200 text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 hover:border-blue-300 transition-colors"><ChevronDown className="w-4 h-4"/>Expand</button>
-                <button onClick={collapseAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-orange-200 text-orange-700 bg-orange-50 rounded-xl hover:bg-orange-100 hover:border-orange-300 transition-colors"><ChevronRight className="w-4 h-4"/>Collapse</button>
+          <div className="lg:col-span-5">
+            {/* Search Controls */}
+            <div className="mb-3 flex flex-wrap items-center gap-3">
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-2 top-2.5 text-gray-400" />
+                <input
+                  placeholder="Search name/path/description..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-8 pr-3 py-2 border rounded-xl bg-white text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
+                  style={{ width: 320 }}
+                />
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-600">
+                <TypeBadge type="metrics" />
+                <TypeBadge type="state" />
+                <TypeBadge type="action" />
               </div>
             </div>
-            <div className="max-h-[70vh] overflow-auto p-2">
-              <TreeNode
-                node={currentData}
-                level={0}
-                expanded={expanded}
-                onToggle={toggle}
-                onSelect={setSelected}
-                selectedId={selected?.id}
-                search={search}
-              />
-            </div>
-          </Card>
+            
+            <Card className="overflow-hidden">
+              <div className="border-b p-3 px-4 flex items-center justify-between">
+                <SectionTitle>Namespace Tree</SectionTitle>
+                <div className="flex items-center gap-2">
+                  <Pill>{allLeaves.length} namespaces</Pill>
+                  <button onClick={expandAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-blue-200 text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 hover:border-blue-300 transition-colors"><ChevronDown className="w-4 h-4"/>Expand</button>
+                  <button onClick={collapseAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-orange-200 text-orange-700 bg-orange-50 rounded-xl hover:bg-orange-100 hover:border-orange-300 transition-colors"><ChevronRight className="w-4 h-4"/>Collapse</button>
+                </div>
+              </div>
+              <div className="max-h-[70vh] overflow-auto p-2">
+                <TreeNode
+                  node={currentData}
+                  level={0}
+                  expanded={expanded}
+                  onToggle={toggle}
+                  onSelect={setSelected}
+                  selectedId={selected?.id}
+                  search={search}
+                />
+              </div>
+            </Card>
+          </div>
 
           <Card className="lg:col-span-7">
             <div className="border-b p-3 px-4 flex items-center justify-between">
