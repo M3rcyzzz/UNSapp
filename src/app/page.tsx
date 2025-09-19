@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
-import { ChevronRight, ChevronDown, Copy, Search, Info, HardDrive, Activity, CheckCircle2 } from "lucide-react";
+import { ChevronRight, ChevronDown, Copy, Search, HardDrive, Activity, CheckCircle2 } from "lucide-react";
 import { MqttConfigComponent } from './mqtt-config';
 import { MqttStats } from './mqtt-hook';
 import { convertMqttToUnsNodes } from './mqtt-to-uns';
@@ -434,7 +434,7 @@ export default function UNSInteractiveBrowser() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>(createExpandedState(initialDATA));
   const [selected, setSelected] = useState<Node>();
   const [search, setSearch] = useState("");
-  const [showTopicTypes, setShowTopicTypes] = useState(true);
+  // const [showTopicTypes, setShowTopicTypes] = useState(true);
   const [showExportImport, setShowExportImport] = useState(false);
   const [mqttStats, setMqttStats] = useState<MqttStats | null>(null);
 

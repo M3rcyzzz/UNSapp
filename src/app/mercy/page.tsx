@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Activity, Download, Users, Calendar, TrendingUp, RefreshCw } from 'lucide-react';
+import { Activity, Download, Users, TrendingUp, RefreshCw } from 'lucide-react';
 
 interface StatsData {
   totalVisits: number;
@@ -19,7 +19,7 @@ const Card = ({ children, className = "" }: { children: React.ReactNode; classNa
 const StatCard = ({ title, value, icon: Icon, color = "blue" }: { 
   title: string; 
   value: string | number; 
-  icon: React.ComponentType<any>; 
+  icon: React.ComponentType<{ className?: string }>; 
   color?: string;
 }) => {
   const colorClasses = {

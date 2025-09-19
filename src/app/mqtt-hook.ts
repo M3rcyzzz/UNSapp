@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import mqtt, { MqttClient } from 'mqtt';
+import mqtt from 'mqtt';
+import type { MqttClient } from 'mqtt';
 
 export interface MqttConfig {
   brokerUrl: string;
@@ -188,8 +189,9 @@ export const useMqtt = (): MqttConnection => {
       if (client) {
         client.end();
       }
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
+      const timeoutId = reconnectTimeoutRef.current;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
   }, [client]);

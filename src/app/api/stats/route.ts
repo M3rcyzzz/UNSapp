@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Simple in-memory storage for demo purposes
 // In production, you'd want to use a database like Vercel KV, Supabase, or PlanetScale
-let stats = {
+const stats = {
   totalVisits: 0,
   totalImports: 0,
   lastVisit: null as Date | null,
@@ -21,7 +21,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { action, userAgent, ip } = body;
+    const { action } = body;
     
     const today = new Date().toISOString().split('T')[0];
     
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       message: `Stats updated for ${action}`,
       data: stats
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { success: false, error: 'Invalid request' },
       { status: 400 }
