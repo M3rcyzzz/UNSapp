@@ -58,29 +58,29 @@ export const MqttConfigComponent: React.FC<MqttConfigProps> = ({ onStatsUpdate }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+        <div className="flex items-center gap-3 min-w-0">
           <h3 className="text-sm font-semibold text-gray-700 tracking-wide">MQTT Live Connection</h3>
           <div className="flex items-center gap-2">
             {stats.connected ? (
               <div className="flex items-center gap-1 text-green-600">
                 <Wifi className="w-4 h-4" />
-                <span className="text-xs font-medium">Connected</span>
+                <span className="text-xs font-medium whitespace-nowrap">Connected</span>
               </div>
             ) : (
               <div className="flex items-center gap-1 text-gray-500">
                 <WifiOff className="w-4 h-4" />
-                <span className="text-xs font-medium">Disconnected</span>
+                <span className="text-xs font-medium whitespace-nowrap">Disconnected</span>
               </div>
             )}
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {stats.connected ? (
             <button
               onClick={handleDisconnect}
-              className="flex items-center gap-1 px-3 py-1.5 text-sm border border-red-200 text-red-700 bg-red-50 rounded-xl hover:bg-red-100 hover:border-red-300 transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 text-sm border border-red-200 text-red-700 bg-red-50 rounded-xl hover:bg-red-100 hover:border-red-300 transition-colors whitespace-nowrap"
             >
               <Square className="w-4 h-4" />
               Disconnect
@@ -89,7 +89,7 @@ export const MqttConfigComponent: React.FC<MqttConfigProps> = ({ onStatsUpdate }
             <button
               onClick={handleConnect}
               disabled={isConnecting}
-              className="flex items-center gap-1 px-3 py-1.5 text-sm border border-green-200 text-green-700 bg-green-50 rounded-xl hover:bg-green-100 hover:border-green-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1 px-3 py-1.5 text-sm border border-green-200 text-green-700 bg-green-50 rounded-xl hover:bg-green-100 hover:border-green-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               <Play className="w-4 h-4" />
               {isConnecting ? 'Connecting...' : 'Connect'}
@@ -98,7 +98,7 @@ export const MqttConfigComponent: React.FC<MqttConfigProps> = ({ onStatsUpdate }
           
           <button
             onClick={() => setShowConfig(!showConfig)}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-200 text-gray-700 bg-gray-50 rounded-xl hover:bg-gray-100 hover:border-gray-300 transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-200 text-gray-700 bg-gray-50 rounded-xl hover:bg-gray-100 hover:border-gray-300 transition-colors whitespace-nowrap"
           >
             <Settings className="w-4 h-4" />
             Config

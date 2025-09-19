@@ -694,7 +694,7 @@ export default function UNSInteractiveBrowser() {
             <div className="mb-6 p-4 bg-amber-50 rounded-xl border border-amber-200">
               <h4 className="text-sm font-semibold text-amber-800 mb-3">Namespace Construction Rules</h4>
               <div className="text-xs text-amber-700 space-y-3">
-                <p>Follow the pattern: <code className="bg-amber-100 px-1 rounded">Version/Site/Function/Station/State|Action|Info|Metrics/topic</code> (similar to ISA95), or from another perspective: <code className="bg-amber-100 px-1 rounded">{`{Business Domain}/{Entity Class}/{Entity ID}/State|Action|Info|Metrics/topic`}</code></p>
+                <p>Follow the pattern: <code className="bg-amber-100 px-1 rounded break-all">Version/Site/Function/Station/State|Action|Info|Metrics/topic</code> (similar to ISA95), or from another perspective: <code className="bg-amber-100 px-1 rounded break-all">{`{Business Domain}/{Entity Class}/{Entity ID}/State|Action|Info|Metrics/topic`}</code></p>
                 
                 <ul className="list-disc list-inside space-y-1 ml-4">
                   <li>Use human-readable abbreviations (English preferred)</li>
@@ -705,8 +705,8 @@ export default function UNSInteractiveBrowser() {
                 <div>
                   <p className="font-semibold mb-1">Examples:</p>
                   <ul className="list-disc list-inside space-y-1 ml-4">
-                    <li><code className="bg-amber-100 px-1 rounded">Fuyang/Warehouse/STG1/AGV/AGV1/Action/Startup/</code></li>
-                    <li><code className="bg-amber-100 px-1 rounded">brew/material/MALT-001/Action/inbound</code></li>
+                    <li><code className="bg-amber-100 px-1 rounded break-all">Fuyang/Warehouse/STG1/AGV/AGV1/Action/Startup/</code></li>
+                    <li><code className="bg-amber-100 px-1 rounded break-all">brew/material/MALT-001/Action/inbound</code></li>
                   </ul>
                 </div>
               </div>
