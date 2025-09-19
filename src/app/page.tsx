@@ -374,7 +374,15 @@ const Details = ({ node }: { node?: Node }) => {
       {node.template && (
         <Card>
           <div className="p-4 space-y-2">
-            <SectionTitle>Payload Template (JSON)</SectionTitle>
+            <div className="flex items-center justify-between">
+              <SectionTitle>Payload Template (JSON)</SectionTitle>
+              <button 
+                onClick={() => copyToClipboard(JSON.stringify(node.template, null, 2))} 
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors"
+              >
+                <Copy className="w-3.5 h-3.5" /> Copy
+              </button>
+            </div>
             <pre className="bg-gray-900 border border-gray-700 rounded-xl p-4 text-sm text-green-400 font-mono overflow-auto leading-relaxed shadow-inner">{JSON.stringify(node.template, null, 2)}</pre>
           </div>
         </Card>
