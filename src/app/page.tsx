@@ -5,6 +5,7 @@ import { ChevronRight, ChevronDown, Copy, Search, Info, HardDrive, Activity, Che
 import { MqttConfigComponent } from './mqtt-config';
 import { MqttStats } from './mqtt-hook';
 import { convertMqttToUnsNodes } from './mqtt-to-uns';
+import { trackVisit, trackImport } from './utils/stats';
 
 // ---------- Helper UI bits ----------
 const Pill = ({ children }: { children: React.ReactNode }) => (
@@ -29,7 +30,7 @@ const Card = ({ children, className = "" }: { children: React.ReactNode; classNa
 );
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="text-sm font-semibold text-gray-700 tracking-wide">{children}</h3>
+  <h3 className="text-sm font-medium text-gray-700 tracking-wide">{children}</h3>
 );
 
 // ---------- Data Model ----------
@@ -215,19 +216,85 @@ function runSelfTests(root: Node) {
   return results;
 }
 
-const SelfTestPanel = ({ root }: { root: Node }) => {
+const TestAndStatsPanel = ({ root, allLeaves, mqttStats }: { root: Node, allLeaves: Node[], mqttStats?: MqttStats | null }) => {
   const tests = useMemo(() => runSelfTests(root), [root]);
   const allPass = tests.every((t) => t.pass);
+  
+  const totals = useMemo(() => {
+    const sum = (t?: TopicType) => allLeaves.filter((n) => n.type && (!t || n.type === t)).reduce((acc, n) => acc + (n.estMps || 0), 0);
+    const count = (t?: TopicType) => allLeaves.filter((n) => n.type && (!t || n.type === t)).length;
+    return { 
+      metrics: sum("metrics"), 
+      others: sum("state") + sum("action"), 
+      all: sum(undefined),
+      metricsCount: count("metrics"),
+      stateCount: count("state"),
+      actionCount: count("action"),
+      totalCount: count(undefined)
+    };
+  }, [allLeaves]);
+
+  const isLiveData = mqttStats?.connected || false;
+
   return (
     <Card>
-      <div className="p-3 flex items-center gap-3">
-        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border ${allPass ? "bg-green-50 text-green-700 border-green-200" : "bg-amber-50 text-amber-700 border-amber-200"}`}>
-          <CheckCircle2 className="w-3.5 h-3.5" /> {allPass ? "All self-tests passed" : "Some tests failed"}
-        </span>
-        <div className="text-xs text-gray-600 flex flex-wrap gap-2">
-          {tests.map((t, i) => (
-            <span key={i} className={`px-1.5 py-0.5 rounded-md border ${t.pass ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}`}>{t.name}{t.detail ? ` (${t.detail})` : ""}</span>
-          ))}
+      <div className="p-3 space-y-3">
+        {/* Self Test Section */}
+        <div className="flex items-center gap-3">
+          <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border ${allPass ? "bg-green-50 text-green-700 border-green-200" : "bg-amber-50 text-amber-700 border-amber-200"}`}>
+            <CheckCircle2 className="w-3.5 h-3.5" /> {allPass ? "All self-tests passed" : "Some tests failed"}
+          </span>
+          <div className="text-xs text-gray-600 flex flex-wrap gap-2">
+            {tests.map((t, i) => (
+              <span key={i} className={`px-1.5 py-0.5 rounded-md border ${t.pass ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}`}>{t.name}{t.detail ? ` (${t.detail})` : ""}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-gray-200"></div>
+
+        {/* Statistics Section */}
+        <div className="space-y-3">
+          {/* Message Rate Statistics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <Activity className="w-4 h-4 text-indigo-600 flex-shrink-0"/>
+              <span className="text-sm text-gray-600 truncate">Metrics</span>
+              <span className="font-mono text-sm font-normal text-indigo-700">{totals.metrics.toFixed(3)} msg/s</span>
+              {isLiveData && <span className="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full">LIVE</span>}
+            </div>
+            <div className="flex items-center gap-2 min-w-0">
+              <HardDrive className="w-4 h-4 text-slate-600 flex-shrink-0"/>
+              <span className="text-sm text-gray-600 truncate">Others</span>
+              <span className="font-mono text-sm font-normal text-slate-700">{totals.others.toFixed(3)} msg/s</span>
+            </div>
+            <div className="flex items-center gap-2 min-w-0">
+              <Activity className="w-4 h-4 text-gray-600 flex-shrink-0"/>
+              <span className="text-sm text-gray-600 truncate">Total</span>
+              <span className="font-mono text-sm font-normal text-gray-800">{totals.all.toFixed(3)} msg/s</span>
+            </div>
+          </div>
+
+          {/* Topic Count Statistics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <TypeBadge type="metrics" />
+              <span className="font-mono text-sm font-normal text-indigo-700">{totals.metricsCount}</span>
+            </div>
+            <div className="flex items-center gap-2 min-w-0">
+              <TypeBadge type="state" />
+              <span className="font-mono text-sm font-normal text-green-700">{totals.stateCount}</span>
+            </div>
+            <div className="flex items-center gap-2 min-w-0">
+              <TypeBadge type="action" />
+              <span className="font-mono text-sm font-normal text-amber-700">{totals.actionCount}</span>
+            </div>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-sm text-gray-600">Total</span>
+              <span className="font-mono text-sm font-normal text-gray-800">{totals.totalCount}</span>
+            </div>
+          </div>
         </div>
       </div>
     </Card>
@@ -256,7 +323,7 @@ const TreeNode = ({ node, level, expanded, onToggle, onSelect, selectedId, searc
         onClick={() => (isLeaf ? onSelect(node) : onToggle(node.id))}
       >
         {isLeaf ? <span className="w-4" /> : (isOpen ? <ChevronDown className="w-4 h-4 text-gray-500" /> : <ChevronRight className="w-4 h-4 text-gray-500" />)}
-        <span className="text-sm font-medium text-gray-800">{node.name}</span>
+        <span className="text-sm font-normal text-gray-800">{node.name}</span>
         {node.type && <TypeBadge type={node.type} />}
         {node.type && <span className="text-[10px] text-gray-500">{formatMps(node.estMps)}</span>}
       </div>
@@ -285,7 +352,7 @@ const Details = ({ node }: { node?: Node }) => {
         </div>
         <div className="flex items-center gap-2">
           {node.type && <TypeBadge type={node.type} />}
-          <button onClick={() => copyToClipboard(node.path)} className="inline-flex items-center gap-1 px-2 py-1 text-xs border rounded-md hover:bg-gray-50"><Copy className="w-3.5 h-3.5" /> Copy</button>
+          <button onClick={() => copyToClipboard(node.path)} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors"><Copy className="w-3.5 h-3.5" /> Copy</button>
         </div>
       </div>
 
@@ -339,39 +406,6 @@ const Details = ({ node }: { node?: Node }) => {
 };
 
 // ---------- Totals ----------
-const TotalsBar = ({ allLeaves, mqttStats }: { allLeaves: Node[], mqttStats?: MqttStats | null }) => {
-  const totals = useMemo(() => {
-    const sum = (t?: TopicType) => allLeaves.filter((n) => n.type && (!t || n.type === t)).reduce((acc, n) => acc + (n.estMps || 0), 0);
-    return { metrics: sum("metrics"), others: sum("state") + sum("action"), all: sum(undefined) };
-  }, [allLeaves]);
-
-  const isLiveData = mqttStats?.connected || false;
-
-  return (
-    <Card>
-      <div className="p-4 flex flex-wrap items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-indigo-600"/>
-          <span className="text-sm text-gray-600">Metrics</span>
-          <span className="font-mono text-lg font-bold text-indigo-700">{totals.metrics.toFixed(3)} msg/s</span>
-          {isLiveData && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">LIVE</span>}
-        </div>
-        <div className="flex items-center gap-2">
-          <HardDrive className="w-4 h-4 text-slate-600"/>
-          <span className="text-sm text-gray-600">State/Action</span>
-          <span className="font-mono text-lg font-bold text-slate-700">{totals.others.toFixed(3)} msg/s</span>
-          {isLiveData && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">LIVE</span>}
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Info className="w-4 h-4 text-gray-500"/>
-          <span className="text-sm text-gray-600">Total</span>
-          <span className="font-mono text-lg font-bold text-gray-800">{totals.all.toFixed(3)} msg/s</span>
-          {isLiveData && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">LIVE</span>}
-        </div>
-      </div>
-    </Card>
-  );
-};
 
 // ---------- Main ----------
 // Helper function to get all node IDs for expansion
@@ -425,6 +459,11 @@ export default function UNSInteractiveBrowser() {
     setSelected(firstLeaf);
   }, [allLeaves]);
 
+  // Track page visit on component mount
+  useEffect(() => {
+    trackVisit();
+  }, []);
+
 
   const toggle = (id: string) => setExpanded((e) => ({ ...e, [id]: !e[id] }));
 
@@ -441,6 +480,9 @@ export default function UNSInteractiveBrowser() {
       const rebuilt = fromCompact(json);
       setData(rebuilt);
       setSelected(undefined);
+      
+      // Track successful import
+      trackImport();
     } catch {
       alert("Invalid JSON. Expected {version, topics[]} with leaf items.");
     }
@@ -449,85 +491,89 @@ export default function UNSInteractiveBrowser() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">UNS Interactive Browser </h1>
+        <div className="mb-4 text-center">
+          <h1 className="text-2xl font-bold tracking-tight cool-title">UNS is all you need</h1>
         </div>
 
-        {/* MQTT Live Connection */}
-        <div className="mb-6">
-          <MqttConfigComponent onStatsUpdate={setMqttStats} />
-        </div>
-
-
-        {/* Copy/Paste Import/Export - Collapsible */}
-        <Card className="overflow-hidden">
-          <div 
-            className="p-4 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-200"
-            onClick={() => setShowExportImport(!showExportImport)}
-          >
-            <div className="flex items-center justify-between">
-              <SectionTitle>Export / Import</SectionTitle>
-              {showExportImport ? (
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-gray-500" />
-              )}
-            </div>
+        {/* MQTT and Import/Export - Side by Side */}
+        <div className="mb-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* MQTT Live Connection */}
+          <div>
+            <MqttConfigComponent onStatsUpdate={setMqttStats} />
           </div>
-          {showExportImport && (
-            <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <SectionTitle>Export (full JSON)</SectionTitle>
-                <div className="mt-2">
-                  <button 
-                    onClick={() => {
-                      const exportData = toCompact(currentData);
-                      setExportText(JSON.stringify(exportData, null, 2));
-                    }}
-                    className="w-full px-4 py-3 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center justify-center gap-2"
-                  >
-                    <Copy className="w-4 h-4"/>
-                    生成当前Namespace Tree的完整JSON
-                  </button>
-                  {exportText && (
-                    <div className="mt-3">
-                      <textarea
-                        className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-white transition-colors"
-                        value={exportText}
-                        readOnly
-                      />
-                      <div className="mt-2 flex items-center gap-2">
-                        <button onClick={() => copyToClipboard(exportText)} className="px-3 py-1.5 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center gap-1"><Copy className="w-4 h-4"/>Copy</button>
-                        <span className="text-xs text-gray-600 font-medium">Format: {`{"version":"v1","topics":[{"path","type","template"}]}`}</span>
-                      </div>
-                    </div>
+
+          {/* Copy/Paste Import/Export - Collapsible */}
+          <div>
+            <Card className="overflow-hidden">
+              <div 
+                className="p-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-200"
+                onClick={() => setShowExportImport(!showExportImport)}
+              >
+                <div className="flex items-center justify-between">
+                  <SectionTitle>Export / Import</SectionTitle>
+                  {showExportImport ? (
+                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-gray-500" />
                   )}
                 </div>
               </div>
-              <div>
-                <SectionTitle>Import (paste JSON here)</SectionTitle>
-                <div className="mt-2">
-                  <textarea
-                    className="w-full h-64 font-mono text-sm border border-gray-300 rounded-xl p-4 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-gray-50 transition-colors"
-                    value={importText}
-                    onChange={(e) => setImportText(e.target.value)}
-                  />
-                  <div className="mt-2 flex items-center gap-2">
-                    <button onClick={onImportFromPaste} className="px-3 py-1.5 text-sm border border-green-200 text-green-700 bg-green-50 rounded-xl hover:bg-green-100 hover:border-green-300 transition-colors">Import from paste</button>
-                    <span className="text-xs text-gray-600 font-medium">This will rebuild the tree from {`topics[].path`}</span>
+              {showExportImport && (
+                <div className="p-3 space-y-4">
+                  <div>
+                    <SectionTitle>Export (full JSON)</SectionTitle>
+                    <div className="mt-2">
+                      <button 
+                        onClick={() => {
+                          const exportData = toCompact(currentData);
+                          setExportText(JSON.stringify(exportData, null, 2));
+                        }}
+                        className="w-full px-3 py-2 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center justify-center gap-2"
+                      >
+                        <Copy className="w-4 h-4"/>
+                        Generate JSON
+                      </button>
+                      {exportText && (
+                        <div className="mt-3">
+                          <textarea
+                            className="w-full h-32 font-mono text-sm border border-gray-300 rounded-xl p-3 bg-gray-50 text-gray-900 placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-white transition-colors"
+                            value={exportText}
+                            readOnly
+                          />
+                          <div className="mt-2 flex items-center gap-2">
+                            <button onClick={() => copyToClipboard(exportText)} className="px-3 py-1.5 text-sm border border-indigo-200 text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 hover:border-indigo-300 transition-colors inline-flex items-center gap-1"><Copy className="w-4 h-4"/>Copy</button>
+                            <span className="text-xs text-gray-600 font-medium">Format: {`{"version":"v1","topics":[{"path","type","template"}]}`}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <SectionTitle>Import (paste JSON here)</SectionTitle>
+                    <div className="mt-2">
+                      <textarea
+                        className="w-full h-32 font-mono text-sm border border-gray-300 rounded-xl p-3 bg-white text-gray-900 placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 focus:bg-gray-50 transition-colors"
+                        value={importText}
+                        onChange={(e) => setImportText(e.target.value)}
+                      />
+                      <div className="mt-2 flex items-center gap-2">
+                        <button onClick={onImportFromPaste} className="px-3 py-1.5 text-sm border border-green-200 text-green-700 bg-green-50 rounded-xl hover:bg-green-100 hover:border-green-300 transition-colors">Import from paste</button>
+                        <span className="text-xs text-gray-600 font-medium">This will rebuild the tree from {`topics[].path`}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
-        </Card>
+              )}
+            </Card>
+          </div>
+        </div>
 
-        <SelfTestPanel root={data} />
-        
-        <TotalsBar allLeaves={allLeaves} mqttStats={mqttStats} />
+        <div className="mb-4">
+          <TestAndStatsPanel root={data} allLeaves={allLeaves} mqttStats={mqttStats} />
+        </div>
 
         {/* Layout */}
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-5">
             {/* Search Controls */}
             <div className="mb-3 flex flex-wrap items-center gap-3">
@@ -537,24 +583,21 @@ export default function UNSInteractiveBrowser() {
                   placeholder="Search name/path/description..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-8 pr-3 py-2 border rounded-xl bg-white text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
+                  className="pl-8 pr-3 py-2 border rounded-xl bg-white text-sm text-gray-900 placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300"
                   style={{ width: 320 }}
                 />
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <TypeBadge type="metrics" />
-                <TypeBadge type="state" />
-                <TypeBadge type="action" />
               </div>
             </div>
             
             <Card className="overflow-hidden">
-              <div className="border-b p-3 px-4 flex items-center justify-between">
-                <SectionTitle>Namespace Tree</SectionTitle>
-                <div className="flex items-center gap-2">
-                  <Pill>{allLeaves.length} namespaces</Pill>
-                  <button onClick={expandAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-blue-200 text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 hover:border-blue-300 transition-colors"><ChevronDown className="w-4 h-4"/>Expand</button>
-                  <button onClick={collapseAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-orange-200 text-orange-700 bg-orange-50 rounded-xl hover:bg-orange-100 hover:border-orange-300 transition-colors"><ChevronRight className="w-4 h-4"/>Collapse</button>
+              <div className="border-b p-3 px-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <SectionTitle>Namespace Tree</SectionTitle>
+                  <div className="flex items-center gap-2">
+                    <Pill>{allLeaves.length} namespaces</Pill>
+                    <button onClick={expandAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-blue-200 text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 hover:border-blue-300 transition-colors whitespace-nowrap"><ChevronDown className="w-3.5 h-3.5"/>Expand</button>
+                    <button onClick={collapseAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-orange-200 text-orange-700 bg-orange-50 rounded-xl hover:bg-orange-100 hover:border-orange-300 transition-colors whitespace-nowrap"><ChevronRight className="w-3.5 h-3.5"/>Collapse</button>
+                  </div>
                 </div>
               </div>
               <div className="max-h-[70vh] overflow-auto p-2">
@@ -592,12 +635,12 @@ export default function UNSInteractiveBrowser() {
             <span className="inline-flex items-center gap-1"><Activity className="w-3.5 h-3.5"/>metrics → time-series DB</span>
             <span className="inline-flex items-center gap-1"><HardDrive className="w-3.5 h-3.5"/>state/action → JSONB (transactional)</span>
             <span className="inline-flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5"/>ID kept in payload to avoid topic explosion</span>
+            </div>
           </div>
-        </div>
 
         {/* UNS Topic Types and Standard - Always Expanded */}
         <Card className="overflow-hidden mt-6">
-          <div className="p-4">
+            <div className="p-4">
             <SectionTitle>UNS Topic Types & Standard</SectionTitle>
           </div>
           <div className="p-4 pt-0">
@@ -722,15 +765,15 @@ export default function UNSInteractiveBrowser() {
               <p className="text-xs text-gray-600 mt-3">
                 <strong>Note:</strong> Topic types should be explicitly indicated in the second-to-last level of the Topic path.
               </p>
-            </div>
-            
-            {/* JSON Format Specification */}
+              </div>
+              
+              {/* JSON Format Specification */}
             <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <h4 className="text-sm font-semibold text-gray-800 mb-3">JSON Format Specification</h4>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-xs text-gray-700 mb-2 font-medium">Interactive Browser accepts JSON in the following format:</p>
-                  <pre className="text-xs bg-gray-900 text-green-400 p-3 rounded-lg overflow-x-auto">
+                <h4 className="text-sm font-semibold text-gray-800 mb-3">JSON Format Specification</h4>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-gray-700 mb-2 font-medium">Interactive Browser accepts JSON in the following format:</p>
+                    <pre className="text-xs bg-gray-900 text-green-400 p-3 rounded-lg overflow-x-auto">
 {`{
   "version": "v1",
   "topics": [
@@ -748,40 +791,40 @@ export default function UNSInteractiveBrowser() {
     }
   ]
 }`}
-                  </pre>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div>
-                    <h5 className="font-semibold text-gray-800 mb-2">Required Fields:</h5>
-                    <ul className="space-y-1 text-gray-700">
-                      <li><code className="bg-gray-200 px-1 rounded">version</code> - Schema version (string)</li>
-                      <li><code className="bg-gray-200 px-1 rounded">topics</code> - Array of topic objects</li>
-                      <li><code className="bg-gray-200 px-1 rounded">path</code> - Full UNS path (string)</li>
-                      <li><code className="bg-gray-200 px-1 rounded">type</code> - Topic type: &quot;state&quot;, &quot;action&quot;, or &quot;metrics&quot;</li>
-                    </ul>
+                    </pre>
                   </div>
                   
-                  <div>
-                    <h5 className="font-semibold text-gray-800 mb-2">Optional Fields:</h5>
-                    <ul className="space-y-1 text-gray-700">
-                      <li><code className="bg-gray-200 px-1 rounded">estMps</code> - Estimated messages per second (number)</li>
-                      <li><code className="bg-gray-200 px-1 rounded">description</code> - Human-readable description (string)</li>
-                      <li><code className="bg-gray-200 px-1 rounded">template</code> - Example payload (object)</li>
-                    </ul>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                      <h5 className="font-semibold text-gray-800 mb-2">Required Fields:</h5>
+                      <ul className="space-y-1 text-gray-700">
+                        <li><code className="bg-gray-200 px-1 rounded">version</code> - Schema version (string)</li>
+                        <li><code className="bg-gray-200 px-1 rounded">topics</code> - Array of topic objects</li>
+                        <li><code className="bg-gray-200 px-1 rounded">path</code> - Full UNS path (string)</li>
+                        <li><code className="bg-gray-200 px-1 rounded">type</code> - Topic type: &quot;state&quot;, &quot;action&quot;, or &quot;metrics&quot;</li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <h5 className="font-semibold text-gray-800 mb-2">Optional Fields:</h5>
+                      <ul className="space-y-1 text-gray-700">
+                        <li><code className="bg-gray-200 px-1 rounded">estMps</code> - Estimated messages per second (number)</li>
+                        <li><code className="bg-gray-200 px-1 rounded">description</code> - Human-readable description (string)</li>
+                        <li><code className="bg-gray-200 px-1 rounded">template</code> - Example payload (object)</li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="pt-2 border-t border-gray-300">
-                  <p className="text-xs text-gray-600">
-                    <strong>Note:</strong> The browser will automatically build the namespace tree from the <code className="bg-gray-200 px-1 rounded">path</code> field of each topic. 
-                    Use the Import/Export section above to paste or copy JSON data.
-                  </p>
+                  
+                  <div className="pt-2 border-t border-gray-300">
+                    <p className="text-xs text-gray-600">
+                      <strong>Note:</strong> The browser will automatically build the namespace tree from the <code className="bg-gray-200 px-1 rounded">path</code> field of each topic. 
+                      Use the Import/Export section above to paste or copy JSON data.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Card>
+          </Card>
       </div>
     </div>
   );

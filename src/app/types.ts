@@ -1,4 +1,4 @@
-// UNS Export JSON 类型定义
+// UNS Export JSON Type Definitions
 export interface UnsExportTopic {
   path: string;
   type?: string;

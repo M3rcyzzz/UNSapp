@@ -26,7 +26,7 @@
       "template": {
         "op": "upsert",
         "product_id": "P-M5",
-        "name": "M5 螺丝",
+        "name": "M5 Screw",
         "material_type": "wire",
         "route_v": 1,
         "route_step_1": "CUTWIRE",
@@ -54,7 +54,7 @@
       "template": {
         "op": "upsert",
         "product_id": "P-M6",
-        "name": "M6 螺丝",
+        "name": "M6 Screw",
         "material_type": "wire",
         "route_v": 1,
         "route_step_1": "CUTWIRE",
@@ -82,7 +82,7 @@
       "template": {
         "op": "upsert",
         "product_id": "P-M8",
-        "name": "M8 螺栓",
+        "name": "M8 Bolt",
         "material_type": "wire",
         "route_v": 1,
         "route_step_1": "CUTWIRE",
@@ -110,7 +110,7 @@
       "template": {
         "op": "upsert",
         "product_id": "P-FL6",
-        "name": "M6 法兰螺栓",
+        "name": "M6 Flange Bolt",
         "material_type": "wire",
         "route_v": 1,
         "route_step_1": "CUTWIRE",
@@ -138,7 +138,7 @@
       "template": {
         "op": "upsert",
         "product_id": "P-PANEL1",
-        "name": "钣金面板 A",
+        "name": "Sheet Metal Panel A",
         "material_type": "sheet",
         "route_v": 1,
         "route_step_1": "LASER",
@@ -164,7 +164,7 @@
       "template": {
         "op": "upsert",
         "product_id": "P-PANEL2",
-        "name": "钣金面板 B",
+        "name": "Sheet Metal Panel B",
         "material_type": "sheet",
         "route_v": 1,
         "route_step_1": "LASER",
@@ -314,7 +314,7 @@
       "description": "Inventory snapshot for material S1.",
       "template": {
         "material_id": "S1",
-        "name": "冷轧钢板",
+        "name": "Cold Rolled Steel Sheet",
         "type": "sheet",
         "spec": "1.0mm",
         "onhand_kg": 3000,
@@ -328,7 +328,7 @@
       "description": "Inventory snapshot for material S2.",
       "template": {
         "material_id": "S2",
-        "name": "镀锌钢板",
+        "name": "Galvanized Steel Sheet",
         "type": "sheet",
         "spec": "1.0mm",
         "onhand_kg": 2000,
@@ -342,7 +342,7 @@
       "description": "Inventory snapshot for material S3.",
       "template": {
         "material_id": "S3",
-        "name": "不锈钢板",
+        "name": "Stainless Steel Sheet",
         "type": "sheet",
         "spec": "1.2mm",
         "onhand_kg": 1500,
@@ -356,7 +356,7 @@
       "description": "Inventory snapshot for material S4.",
       "template": {
         "material_id": "S4",
-        "name": "铝板",
+        "name": "Aluminum Sheet",
         "type": "sheet",
         "spec": "2.0mm",
         "onhand_kg": 1000,
@@ -370,7 +370,7 @@
       "description": "Inventory snapshot for material S5.",
       "template": {
         "material_id": "S5",
-        "name": "彩涂钢板",
+        "name": "Color Coated Steel Sheet",
         "type": "sheet",
         "spec": "0.8mm",
         "onhand_kg": 1200,
@@ -384,7 +384,7 @@
       "description": "Inventory snapshot for material W1.",
       "template": {
         "material_id": "W1",
-        "name": "中碳钢丝",
+        "name": "Medium Carbon Steel Wire",
         "type": "wire",
         "spec": "φ5.0mm",
         "onhand_kg": 5000,
@@ -398,7 +398,7 @@
       "description": "Inventory snapshot for material W2.",
       "template": {
         "material_id": "W2",
-        "name": "低碳钢丝",
+        "name": "Low Carbon Steel Wire",
         "type": "wire",
         "spec": "φ3.0mm",
         "onhand_kg": 4000,
@@ -412,7 +412,7 @@
       "description": "Inventory snapshot for material W3.",
       "template": {
         "material_id": "W3",
-        "name": "不锈钢丝",
+        "name": "Stainless Steel Wire",
         "type": "wire",
         "spec": "φ4.0mm",
         "onhand_kg": 3000,

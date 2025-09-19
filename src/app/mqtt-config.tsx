@@ -31,7 +31,7 @@ export const MqttConfigComponent: React.FC<MqttConfigProps> = ({ onStatsUpdate }
     console.log('Broker URL:', config.brokerUrl);
     console.log('Topic prefix:', config.topicPrefix);
     
-    // 启用MQTT调试日志
+    // Enable MQTT debug logging
     localStorage.debug = 'mqttjs*';
     
     setIsConnecting(true);
@@ -57,8 +57,8 @@ export const MqttConfigComponent: React.FC<MqttConfigProps> = ({ onStatsUpdate }
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <h3 className="text-sm font-semibold text-gray-700 tracking-wide">MQTT Live Connection</h3>
           <div className="flex items-center gap-2">
@@ -108,7 +108,7 @@ export const MqttConfigComponent: React.FC<MqttConfigProps> = ({ onStatsUpdate }
 
       {/* Connection Stats */}
       {stats.connected && (
-        <div className="mb-4 p-3 bg-green-50 rounded-xl border border-green-200">
+        <div className="mb-3 p-2 bg-green-50 rounded-xl border border-green-200">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
             <div>
               <span className="text-green-700 font-medium">Messages:</span>
@@ -134,7 +134,7 @@ export const MqttConfigComponent: React.FC<MqttConfigProps> = ({ onStatsUpdate }
 
       {/* Configuration Panel */}
       {showConfig && (
-        <div className="border-t border-gray-200 pt-4">
+        <div className="border-t border-gray-200 pt-3">
           <h4 className="text-sm font-semibold text-gray-800 mb-3">MQTT Broker Configuration</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

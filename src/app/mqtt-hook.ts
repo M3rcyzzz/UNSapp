@@ -62,7 +62,7 @@ export const useMqtt = (): MqttConnection => {
           clean: true,
           reconnectPeriod: 5000,
           connectTimeout: 30 * 1000,
-          // 添加WebSocket路径支持
+          // Add WebSocket path support
           path: config.brokerUrl.includes('/mqtt') ? '/mqtt' : undefined,
         };
 
