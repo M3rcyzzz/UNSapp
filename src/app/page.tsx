@@ -491,9 +491,6 @@ export default function UNSInteractiveBrowser() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="mb-4 text-center">
-          <h1 className="text-2xl font-bold tracking-tight cool-title">UNS is all you need</h1>
-        </div>
 
         {/* MQTT and Import/Export - Side by Side */}
         <div className="mb-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
