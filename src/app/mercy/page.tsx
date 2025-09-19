@@ -1,15 +1,92 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Activity, Download, Users, TrendingUp, RefreshCw } from 'lucide-react';
+import { 
+  Activity, 
+  Download, 
+  Users, 
+  TrendingUp, 
+  RefreshCw, 
+  Clock, 
+  Search, 
+  Copy, 
+  Wifi, 
+  MousePointer,
+  BarChart3,
+  Monitor
+} from 'lucide-react';
 
 interface StatsData {
+  // Basic metrics
   totalVisits: number;
   totalImports: number;
-  lastVisit: string | null;
-  lastImport: string | null;
+  totalExports: number;
+  totalSessions: number;
+  totalSessionDuration: number;
+  averageSessionDuration: number;
+  averagePageLoadTime: number;
+  engagementScore: number;
+  
+  // Feature usage
+  featureUsage: {
+    mqtt_connect: number;
+    mqtt_disconnect: number;
+    mqtt_error: number;
+    search: number;
+    tree_expand: number;
+    tree_collapse: number;
+    tree_select: number;
+    copy: number;
+    import: number;
+    export: number;
+  };
+  
+  // Search analytics
+  searchQueries: string[];
+  totalSearchResults: number;
+  topSearchTerms: [string, number][];
+  
+  // Tree interaction analytics
+  mostAccessedTopics: Record<string, number>;
+  topTopics: [string, number][];
+  
+  // Performance metrics
+  performanceMetrics: {
+    pageLoadTimes: number[];
+    averagePageLoadTime: number;
+  };
+  
+  // User engagement
+  userEngagement: {
+    totalUserActivity: number;
+    averageSessionDuration: number;
+    engagementScore: number;
+  };
+  
+  // Error tracking
+  errors: {
+    total: number;
+    byType: Record<string, number>;
+  };
+  
+  // Device and browser analytics
+  deviceAnalytics: {
+    screenResolutions: Record<string, number>;
+    timezones: Record<string, number>;
+    browsers: Record<string, number>;
+  };
+  
+  // Daily aggregations
   dailyVisits: Record<string, number>;
   dailyImports: Record<string, number>;
+  dailyExports: Record<string, number>;
+  dailySessions: Record<string, number>;
+  dailyDurations: Record<string, number>;
+  
+  // Timestamps
+  lastVisit: string | null;
+  lastImport: string | null;
+  lastExport: string | null;
 }
 
 const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
@@ -26,7 +103,9 @@ const StatCard = ({ title, value, icon: Icon, color = "blue" }: {
     blue: "text-blue-600 bg-blue-50",
     green: "text-green-600 bg-green-50", 
     purple: "text-purple-600 bg-purple-50",
-    orange: "text-orange-600 bg-orange-50"
+    orange: "text-orange-600 bg-orange-50",
+    red: "text-red-600 bg-red-50",
+    indigo: "text-indigo-600 bg-indigo-50"
   };
   
   return (
@@ -70,9 +149,11 @@ export default function MercyStatsPage() {
     fetchStats();
   }, []);
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Never';
-    return new Date(dateString).toLocaleString();
+
+  const formatDuration = (ms: number) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}m ${seconds}s`;
   };
 
   const getRecentDays = (days: number = 7) => {
@@ -125,14 +206,15 @@ export default function MercyStatsPage() {
 
   const dailyVisits = getDailyData(stats.dailyVisits);
   const dailyImports = getDailyData(stats.dailyImports);
+  const dailyExports = getDailyData(stats.dailyExports);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">UNS App Statistics</h1>
-            <p className="text-gray-600 mt-1">Usage analytics and import tracking</p>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900">UNS App Analytics</h1>
+            <p className="text-gray-600 mt-1">Comprehensive usage analytics and performance metrics</p>
           </div>
           <div className="flex items-center gap-3">
             {lastUpdated && (
@@ -159,27 +241,77 @@ export default function MercyStatsPage() {
             color="blue"
           />
           <StatCard
+            title="Total Sessions"
+            value={stats.totalSessions.toLocaleString()}
+            icon={Activity}
+            color="green"
+          />
+          <StatCard
+            title="Avg Session Duration"
+            value={formatDuration(stats.averageSessionDuration)}
+            icon={Clock}
+            color="purple"
+          />
+          <StatCard
+            title="Engagement Score"
+            value={`${stats.engagementScore}/100`}
+            icon={BarChart3}
+            color="orange"
+          />
+        </div>
+
+        {/* Feature Usage Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="MQTT Connections"
+            value={stats.featureUsage.mqtt_connect}
+            icon={Wifi}
+            color="green"
+          />
+          <StatCard
+            title="Search Queries"
+            value={stats.featureUsage.search}
+            icon={Search}
+            color="blue"
+          />
+          <StatCard
+            title="Copy Actions"
+            value={stats.featureUsage.copy}
+            icon={Copy}
+            color="purple"
+          />
+          <StatCard
+            title="Tree Interactions"
+            value={stats.featureUsage.tree_expand + stats.featureUsage.tree_collapse + stats.featureUsage.tree_select}
+            icon={MousePointer}
+            color="orange"
+          />
+        </div>
+
+        {/* Import/Export Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <StatCard
             title="Total Imports"
             value={stats.totalImports.toLocaleString()}
             icon={Download}
             color="green"
           />
           <StatCard
-            title="Last Visit"
-            value={formatDate(stats.lastVisit)}
-            icon={Activity}
-            color="purple"
+            title="Total Exports"
+            value={stats.totalExports.toLocaleString()}
+            icon={TrendingUp}
+            color="blue"
           />
           <StatCard
-            title="Last Import"
-            value={formatDate(stats.lastImport)}
-            icon={TrendingUp}
-            color="orange"
+            title="Page Load Time"
+            value={`${stats.averagePageLoadTime.toFixed(0)}ms`}
+            icon={Monitor}
+            color="purple"
           />
         </div>
 
         {/* Daily Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <Card>
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Visits (Last 7 Days)</h3>
@@ -236,6 +368,123 @@ export default function MercyStatsPage() {
                         {value}
                       </span>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Exports (Last 7 Days)</h3>
+              <div className="space-y-3">
+                {dailyExports.map(({ date, value }) => (
+                  <div key={date} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">
+                      {new Date(date).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-purple-600 h-2 rounded-full" 
+                          style={{ 
+                            width: `${Math.min(100, (value / Math.max(...dailyExports.map(d => d.value), 1)) * 100)}%` 
+                          }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium text-gray-900 w-8 text-right">
+                        {value}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Top Searches and Topics */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card>
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Search Terms</h3>
+              <div className="space-y-2">
+                {stats.topSearchTerms.slice(0, 10).map(([term, count]) => (
+                  <div key={term} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700 truncate flex-1">{term}</span>
+                    <span className="text-sm font-medium text-gray-900 ml-2">{count}</span>
+                  </div>
+                ))}
+                {stats.topSearchTerms.length === 0 && (
+                  <p className="text-sm text-gray-500">No search data available</p>
+                )}
+              </div>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Most Accessed Topics</h3>
+              <div className="space-y-2">
+                {stats.topTopics.slice(0, 10).map(([topic, count]) => (
+                  <div key={topic} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700 truncate flex-1 font-mono">{topic}</span>
+                    <span className="text-sm font-medium text-gray-900 ml-2">{count}</span>
+                  </div>
+                ))}
+                {stats.topTopics.length === 0 && (
+                  <p className="text-sm text-gray-500">No topic access data available</p>
+                )}
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Device Analytics */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Browser Distribution</h3>
+              <div className="space-y-2">
+                {Object.entries(stats.deviceAnalytics.browsers).map(([browser, count]) => (
+                  <div key={browser} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700">{browser}</span>
+                    <span className="text-sm font-medium text-gray-900">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Screen Resolutions</h3>
+              <div className="space-y-2">
+                {Object.entries(stats.deviceAnalytics.screenResolutions).slice(0, 5).map(([resolution, count]) => (
+                  <div key={resolution} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700">{resolution}</span>
+                    <span className="text-sm font-medium text-gray-900">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Error Summary</h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">Total Errors</span>
+                  <span className="text-sm font-medium text-red-600">{stats.errors.total}</span>
+                </div>
+                {Object.entries(stats.errors.byType).map(([errorType, count]) => (
+                  <div key={errorType} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700">{errorType}</span>
+                    <span className="text-sm font-medium text-gray-900">{count}</span>
                   </div>
                 ))}
               </div>
