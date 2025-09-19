@@ -240,13 +240,13 @@ const TestAndStatsPanel = ({ root, allLeaves, mqttStats }: { root: Node, allLeav
     <Card>
       <div className="p-3 space-y-3">
         {/* Self Test Section */}
-        <div className="flex items-center gap-3">
-          <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border ${allPass ? "bg-green-50 text-green-700 border-green-200" : "bg-amber-50 text-amber-700 border-amber-200"}`}>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border ${allPass ? "bg-green-50 text-green-700 border-green-200" : "bg-amber-50 text-amber-700 border-amber-200"} whitespace-nowrap`}>
             <CheckCircle2 className="w-3.5 h-3.5" /> {allPass ? "All self-tests passed" : "Some tests failed"}
           </span>
           <div className="text-xs text-gray-600 flex flex-wrap gap-2">
             {tests.map((t, i) => (
-              <span key={i} className={`px-1.5 py-0.5 rounded-md border ${t.pass ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}`}>{t.name}{t.detail ? ` (${t.detail})` : ""}</span>
+              <span key={i} className={`px-1.5 py-0.5 rounded-md border ${t.pass ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"} break-words`}>{t.name}{t.detail ? ` (${t.detail})` : ""}</span>
             ))}
           </div>
         </div>
@@ -261,18 +261,18 @@ const TestAndStatsPanel = ({ root, allLeaves, mqttStats }: { root: Node, allLeav
             <div className="flex items-center gap-2 min-w-0">
               <Activity className="w-4 h-4 text-indigo-600 flex-shrink-0"/>
               <span className="text-sm text-gray-600 truncate">Metrics</span>
-              <span className="font-mono text-sm font-normal text-indigo-700">{totals.metrics.toFixed(3)} msg/s</span>
-              {isLiveData && <span className="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full">LIVE</span>}
+              <span className="font-mono text-sm font-normal text-indigo-700 whitespace-nowrap">{totals.metrics.toFixed(3)} msg/s</span>
+              {isLiveData && <span className="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">LIVE</span>}
             </div>
             <div className="flex items-center gap-2 min-w-0">
               <HardDrive className="w-4 h-4 text-slate-600 flex-shrink-0"/>
               <span className="text-sm text-gray-600 truncate">Others</span>
-              <span className="font-mono text-sm font-normal text-slate-700">{totals.others.toFixed(3)} msg/s</span>
+              <span className="font-mono text-sm font-normal text-slate-700 whitespace-nowrap">{totals.others.toFixed(3)} msg/s</span>
             </div>
             <div className="flex items-center gap-2 min-w-0">
               <Activity className="w-4 h-4 text-gray-600 flex-shrink-0"/>
               <span className="text-sm text-gray-600 truncate">Total</span>
-              <span className="font-mono text-sm font-normal text-gray-800">{totals.all.toFixed(3)} msg/s</span>
+              <span className="font-mono text-sm font-normal text-gray-800 whitespace-nowrap">{totals.all.toFixed(3)} msg/s</span>
             </div>
           </div>
 
@@ -345,14 +345,14 @@ const Details = ({ node }: { node?: Node }) => {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="space-y-1 min-w-0 flex-1">
           <div className="text-xs text-gray-500">UNS Path</div>
           <div className="font-mono text-sm text-gray-900 break-words">{node.path}</div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {node.type && <TypeBadge type={node.type} />}
-          <button onClick={() => copyToClipboard(node.path)} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors"><Copy className="w-3.5 h-3.5" /> Copy</button>
+          <button onClick={() => copyToClipboard(node.path)} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors whitespace-nowrap"><Copy className="w-3.5 h-3.5" /> Copy</button>
         </div>
       </div>
 
@@ -374,11 +374,11 @@ const Details = ({ node }: { node?: Node }) => {
       {node.template && (
         <Card>
           <div className="p-4 space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <SectionTitle>Payload Template (JSON)</SectionTitle>
               <button 
                 onClick={() => copyToClipboard(JSON.stringify(node.template, null, 2))} 
-                className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors whitespace-nowrap self-start sm:self-auto"
               >
                 <Copy className="w-3.5 h-3.5" /> Copy
               </button>

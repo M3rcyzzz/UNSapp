@@ -211,20 +211,20 @@ export default function MercyStatsPage() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">UNS App Analytics</h1>
-            <p className="text-gray-600 mt-1">Comprehensive usage analytics and performance metrics</p>
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">UNS App Analytics</h1>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">Comprehensive usage analytics and performance metrics</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             {lastUpdated && (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 whitespace-nowrap">
                 Last updated: {lastUpdated.toLocaleTimeString()}
               </span>
             )}
             <button 
               onClick={fetchStats}
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
             >
               <RefreshCw className="w-4 h-4" />
               Refresh
@@ -413,9 +413,9 @@ export default function MercyStatsPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Search Terms</h3>
               <div className="space-y-2">
                 {stats.topSearchTerms.slice(0, 10).map(([term, count]) => (
-                  <div key={term} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700 truncate flex-1">{term}</span>
-                    <span className="text-sm font-medium text-gray-900 ml-2">{count}</span>
+                  <div key={term} className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-gray-700 truncate flex-1 min-w-0">{term}</span>
+                    <span className="text-sm font-medium text-gray-900 flex-shrink-0">{count}</span>
                   </div>
                 ))}
                 {stats.topSearchTerms.length === 0 && (
@@ -430,9 +430,9 @@ export default function MercyStatsPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Most Accessed Topics</h3>
               <div className="space-y-2">
                 {stats.topTopics.slice(0, 10).map(([topic, count]) => (
-                  <div key={topic} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700 truncate flex-1 font-mono">{topic}</span>
-                    <span className="text-sm font-medium text-gray-900 ml-2">{count}</span>
+                  <div key={topic} className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-gray-700 truncate flex-1 min-w-0 font-mono">{topic}</span>
+                    <span className="text-sm font-medium text-gray-900 flex-shrink-0">{count}</span>
                   </div>
                 ))}
                 {stats.topTopics.length === 0 && (
@@ -450,9 +450,9 @@ export default function MercyStatsPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Browser Distribution</h3>
               <div className="space-y-2">
                 {Object.entries(stats.deviceAnalytics.browsers).map(([browser, count]) => (
-                  <div key={browser} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">{browser}</span>
-                    <span className="text-sm font-medium text-gray-900">{count}</span>
+                  <div key={browser} className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-gray-700 truncate flex-1 min-w-0">{browser}</span>
+                    <span className="text-sm font-medium text-gray-900 flex-shrink-0">{count}</span>
                   </div>
                 ))}
               </div>
@@ -464,9 +464,9 @@ export default function MercyStatsPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Screen Resolutions</h3>
               <div className="space-y-2">
                 {Object.entries(stats.deviceAnalytics.screenResolutions).slice(0, 5).map(([resolution, count]) => (
-                  <div key={resolution} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">{resolution}</span>
-                    <span className="text-sm font-medium text-gray-900">{count}</span>
+                  <div key={resolution} className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-gray-700 truncate flex-1 min-w-0">{resolution}</span>
+                    <span className="text-sm font-medium text-gray-900 flex-shrink-0">{count}</span>
                   </div>
                 ))}
               </div>
@@ -482,9 +482,9 @@ export default function MercyStatsPage() {
                   <span className="text-sm font-medium text-red-600">{stats.errors.total}</span>
                 </div>
                 {Object.entries(stats.errors.byType).map(([errorType, count]) => (
-                  <div key={errorType} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">{errorType}</span>
-                    <span className="text-sm font-medium text-gray-900">{count}</span>
+                  <div key={errorType} className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-gray-700 truncate flex-1 min-w-0">{errorType}</span>
+                    <span className="text-sm font-medium text-gray-900 flex-shrink-0">{count}</span>
                   </div>
                 ))}
               </div>
