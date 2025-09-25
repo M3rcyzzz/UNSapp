@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
-import { ChevronRight, ChevronDown, Copy, Search, HardDrive, Activity, CheckCircle2 } from "lucide-react";
+import { ChevronRight, ChevronDown, Copy, Search, HardDrive, Activity, CheckCircle2, TreePine, Network } from "lucide-react";
 import { MqttConfigComponent } from './mqtt-config';
 import { MqttStats } from './mqtt-hook';
 import { convertMqttToUnsNodes } from './mqtt-to-uns';
 import { trackVisit, trackImport } from './utils/stats';
+import { NamespaceDiagram } from './namespace-diagram';
 
 // ---------- Helper UI bits ----------
 const Pill = ({ children }: { children: React.ReactNode }) => (
@@ -445,6 +446,7 @@ export default function UNSInteractiveBrowser() {
   // const [showTopicTypes, setShowTopicTypes] = useState(true);
   const [showExportImport, setShowExportImport] = useState(false);
   const [mqttStats, setMqttStats] = useState<MqttStats | null>(null);
+  const [viewMode, setViewMode] = useState<'tree' | 'diagram'>('tree');
 
   const [exportText, setExportText] = useState<string>(JSON.stringify(toCompact(initialDATA), null, 2));
   const [importText, setImportText] = useState<string>(JSON.stringify(toCompact(initialDATA), null, 2));
@@ -580,7 +582,7 @@ export default function UNSInteractiveBrowser() {
         {/* Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-5">
-            {/* Search Controls */}
+            {/* Search Controls and View Toggle */}
             <div className="mb-3 flex flex-wrap items-center gap-3">
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-2 top-2.5 text-gray-400" />
@@ -592,31 +594,65 @@ export default function UNSInteractiveBrowser() {
                   style={{ width: 320 }}
                 />
               </div>
+              
+              {/* View Mode Toggle */}
+              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+                <button
+                  onClick={() => setViewMode('tree')}
+                  className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                    viewMode === 'tree' 
+                      ? 'bg-white text-indigo-700 shadow-sm border border-indigo-200' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <TreePine className="w-3.5 h-3.5" />
+                  树形视图
+                </button>
+                <button
+                  onClick={() => setViewMode('diagram')}
+                  className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                    viewMode === 'diagram' 
+                      ? 'bg-white text-indigo-700 shadow-sm border border-indigo-200' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <Network className="w-3.5 h-3.5" />
+                  关系图
+                </button>
+              </div>
             </div>
             
-            <Card className="overflow-hidden">
-              <div className="border-b p-3 px-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <SectionTitle>Namespace Tree</SectionTitle>
-                  <div className="flex items-center gap-2">
-                    <Pill>{allLeaves.length} namespaces</Pill>
-                    <button onClick={expandAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-blue-200 text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 hover:border-blue-300 transition-colors whitespace-nowrap"><ChevronDown className="w-3.5 h-3.5"/>Expand</button>
-                    <button onClick={collapseAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-orange-200 text-orange-700 bg-orange-50 rounded-xl hover:bg-orange-100 hover:border-orange-300 transition-colors whitespace-nowrap"><ChevronRight className="w-3.5 h-3.5"/>Collapse</button>
+            {viewMode === 'tree' ? (
+              <Card className="overflow-hidden">
+                <div className="border-b p-3 px-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <SectionTitle>Namespace Tree</SectionTitle>
+                    <div className="flex items-center gap-2">
+                      <Pill>{allLeaves.length} namespaces</Pill>
+                      <button onClick={expandAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-blue-200 text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 hover:border-blue-300 transition-colors whitespace-nowrap"><ChevronDown className="w-3.5 h-3.5"/>Expand</button>
+                      <button onClick={collapseAll} className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-orange-200 text-orange-700 bg-orange-50 rounded-xl hover:bg-orange-100 hover:border-orange-300 transition-colors whitespace-nowrap"><ChevronRight className="w-3.5 h-3.5"/>Collapse</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="max-h-[70vh] overflow-auto p-2">
-                <TreeNode
-                  node={currentData}
-                  level={0}
-                  expanded={expanded}
-                  onToggle={toggle}
-                  onSelect={setSelected}
-                  selectedId={selected?.id}
-                  search={search}
-                />
-              </div>
-            </Card>
+                <div className="max-h-[70vh] overflow-auto p-2">
+                  <TreeNode
+                    node={currentData}
+                    level={0}
+                    expanded={expanded}
+                    onToggle={toggle}
+                    onSelect={setSelected}
+                    selectedId={selected?.id}
+                    search={search}
+                  />
+                </div>
+              </Card>
+            ) : (
+              <Card className="overflow-hidden">
+                <div className="p-4">
+                  <NamespaceDiagram data={currentData} width={1000} height={700} search={search} />
+                </div>
+              </Card>
+            )}
           </div>
 
           <Card className="lg:col-span-7">
