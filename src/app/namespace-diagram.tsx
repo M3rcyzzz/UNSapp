@@ -169,10 +169,10 @@ export const NamespaceDiagram: React.FC<NamespaceDiagramProps> = ({
         if (d.data.type === "action") return "#f59e0b";
         return "#6b7280";
       })
-      .text(d => d.data.type);
+      .text(d => d.data.type || "");
 
     // 添加MPS信息（如果有）
-    nodeGroup.filter(d => d.data.type && d.data.estMps)
+    nodeGroup.filter(d => !!d.data.type && !!d.data.estMps)
       .append("text")
       .attr("dy", "6em") // 调整位置
       .attr("text-anchor", "middle")
