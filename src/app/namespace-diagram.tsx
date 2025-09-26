@@ -158,7 +158,7 @@ export const NamespaceDiagram: React.FC<NamespaceDiagramProps> = ({
       });
 
     // 添加类型标签（仅对叶子节点）
-    nodeGroup.filter(d => d.data.type)
+    nodeGroup.filter(d => !!d.data.type)
       .append("text")
       .attr("dy", "4.5em") // 调整位置，避免重叠
       .attr("text-anchor", "middle")
